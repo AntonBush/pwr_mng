@@ -18,21 +18,8 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
-#include "types.h"
-#include "lcd.h"
-#include "gl.h"
-#include "text.h"
 #include "joystick.h"
-#include "leds.h"
-#include "menu.h"
-#include "time.h"
-#include "lowpower.h"
-#include "Demo_Init.h"
-#include "rtc.h"
-#include "ff.h"
-#include "diskio.h"
-#include "systick.h"
+#include "module_app.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
@@ -59,12 +46,27 @@ int main(void)
 void main(void)
 #endif
 {
-  Demo_Init();
-  Calendar_Init();
-  Menu_Init();
-  LowPower_Init();
-  DisplayMenu();
-  ReadKey();
+	uint32_t key = NOKEY;
+  uint32_t last_key = NOKEY;
+
+	App_init();
+
+  while (1)
+  {
+    switch (key)
+    {
+      case SEL:   App_select();	break;
+      case UP:    App_up();   	break;
+      case DOWN:  App_down(); 	break;
+    }
+		
+		do {
+			App_updateStats();
+
+			last_key = key;
+			key = GetKey();
+		} while (key == last_key);
+  }
 }
 
 /*******************************************************************************
