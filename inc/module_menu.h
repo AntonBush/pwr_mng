@@ -11,14 +11,14 @@ typedef struct Menu_Menu Menu_Menu;
 typedef void (Menu_Procedure)(void);
 typedef struct
 {
-	ucint8_t * title;
+	uint8_t * title;
 	struct Menu_Menu * submenu;
 	Menu_Procedure * proc;
 } Menu_MenuItem;
 
 struct Menu_Menu
 {
-	ucint8_t * title;
+	uint8_t * title;
 	Menu_MenuItem * items;
 	size_t n_items;
 	size_t item_index;

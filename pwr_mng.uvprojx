@@ -613,6 +613,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_menu.c</FilePath>
             </File>
+            <File>
+              <FileName>module_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_pwr.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -667,6 +672,21 @@
               <FileName>module_menu.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_menu.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_pwrmng.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_pwrmng.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_pwr.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_pwr.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_pwrsts.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_pwrsts.h</FilePath>
             </File>
           </Files>
         </Group>
