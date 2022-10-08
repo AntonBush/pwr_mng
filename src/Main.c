@@ -61,7 +61,7 @@ void main(void)
     }
 		
 		do {
-			App_updateStats();
+			App_update();
 
 			last_key = key;
 			key = GetKey();

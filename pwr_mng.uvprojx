@@ -618,6 +618,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_pwr.c</FilePath>
             </File>
+            <File>
+              <FileName>module_demo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_demo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -687,6 +692,11 @@
               <FileName>module_pwrsts.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_pwrsts.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_demo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_demo.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -7,6 +7,7 @@
 extern Menu_Menu Pwrsts_StatsMenu;
 
 void Pwrsts_init(Menu_Procedure * return_proc);
+void Pwrsts_update(void);
 
 void Pwrsts_setDevice0(void);
 void Pwrsts_setDevice1(void);

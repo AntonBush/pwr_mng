@@ -25,6 +25,7 @@ struct Menu_Menu
 	Menu_Procedure * up;
 	Menu_Procedure * select;
 	Menu_Procedure * down;
+	Menu_Procedure * update;
 };
 
 //void Menu_displayMenuItemString(uint32_t y, ucint8_t * str);
