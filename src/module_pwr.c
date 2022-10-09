@@ -19,7 +19,7 @@ typedef struct
 
 // Pwr private function prototypes
 
-static void Pwr_update(void);
+static void Pwr_updateGuiStr(void);
 static void Pwr_waitFor(unsigned int ticks);
 
 // Pwr private variables
@@ -65,18 +65,21 @@ void Pwr_init(void)
 	}
 }
 
+int Pwr_currentDevice(void)
+{
+	return Pwr_DeviceIndex;
+}
+
 void Pwr_setCurrentDevice(int device)
 {
 	if (device < 0) Pwr_DeviceIndex = 0;
 	else if (device >= PWR__N_DEVICES) Pwr_DeviceIndex = PWR__N_DEVICES - 1;
 	else Pwr_DeviceIndex = device;
-
-	Pwr_update();
 }
 
 // Pwr private functions
 
-void Pwr_update(void)
+void Pwr_updateGuiStr(void)
 {
 	Pwr_DeviceStr[Pwr_DeviceStrLength - 2] = '0' + Pwr_DeviceIndex + 1;
 
@@ -97,6 +100,7 @@ void Pwr_waitFor(unsigned int ticks)
 
 // Pwrsts private functions prototypes
 
+static void Pwrsts_updateGuiStr(void);
 static void Pwrsts_updateProc(void);
 
 // Pwrsts private variables
@@ -154,20 +158,20 @@ void Pwrsts_update(void)
 	// Update Previous worktime
 }
 
-void Pwrsts_setDevice0(void) { Pwr_setCurrentDevice(PWR__DEVICE_0); }
-void Pwrsts_setDevice1(void) { Pwr_setCurrentDevice(PWR__DEVICE_1); }
-void Pwrsts_setDevice2(void) { Pwr_setCurrentDevice(PWR__DEVICE_2); }
-void Pwrsts_setDevice3(void) { Pwr_setCurrentDevice(PWR__DEVICE_3); }
+void Pwrsts_setDevice0Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_0); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice1Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_1); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice2Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_2); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice3Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_3); Pwrsts_updateGuiStr(); }
 
-void Pwrsts_setDevice4(void) { Pwr_setCurrentDevice(PWR__DEVICE_4); }
-void Pwrsts_setDevice5(void) { Pwr_setCurrentDevice(PWR__DEVICE_5); }
-void Pwrsts_setDevice6(void) { Pwr_setCurrentDevice(PWR__DEVICE_6); }
-void Pwrsts_setDevice7(void) { Pwr_setCurrentDevice(PWR__DEVICE_7); }
+void Pwrsts_setDevice4Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_4); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice5Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_5); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice6Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_6); Pwrsts_updateGuiStr(); }
+void Pwrsts_setDevice7Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_7); Pwrsts_updateGuiStr(); }
 
 // Pwrsts private functions
 
-void Pwrsts_updateProc(void)
-{
+void Pwrsts_updateGuiStr(void)
+{	
 	unsigned int worktime = Pwr_Devices[Pwr_DeviceIndex].worktime;
 	unsigned int previous_worktime = Pwr_Devices[Pwr_DeviceIndex].previous_worktime;
 	
@@ -178,6 +182,8 @@ void Pwrsts_updateProc(void)
 	unsigned int previous_worktime_hours;
 	unsigned int previous_worktime_minutes;
 	unsigned int previous_worktime_seconds;
+
+	Pwr_updateGuiStr();
 
 	worktime_hours = worktime / (60 * 60);
 	worktime %= 60 * 60;
@@ -212,7 +218,11 @@ void Pwrsts_updateProc(void)
 	// seconds
 	Pwrsts_PreviousWorktimeStr[8] = '0' + (previous_worktime_seconds / 10 % 10);
 	Pwrsts_PreviousWorktimeStr[9] = '0' + (previous_worktime_seconds % 10);
+}
 
+void Pwrsts_updateProc(void)
+{
+	Pwrsts_updateGuiStr();
 	Menu_displayMenu(&Pwrsts_StatsMenu);
 }
 
@@ -255,15 +265,33 @@ void Pwrmng_init(Menu_Procedure * return_proc)
 	Pwrmng_PowerMenuItems[ReturnItemIndex].proc = return_proc;
 }
 
-void Pwrmng_setDevice0(void) { Pwr_setCurrentDevice(PWR__DEVICE_0); }
-void Pwrmng_setDevice1(void) { Pwr_setCurrentDevice(PWR__DEVICE_1); }
-void Pwrmng_setDevice2(void) { Pwr_setCurrentDevice(PWR__DEVICE_2); }
-void Pwrmng_setDevice3(void) { Pwr_setCurrentDevice(PWR__DEVICE_3); }
+void Pwrmng_turnDeviceOn(void)
+{
+	Pwrmng_turnDevice(Pwr_DeviceState_on);
 
-void Pwrmng_setDevice4(void) { Pwr_setCurrentDevice(PWR__DEVICE_4); }
-void Pwrmng_setDevice5(void) { Pwr_setCurrentDevice(PWR__DEVICE_5); }
-void Pwrmng_setDevice6(void) { Pwr_setCurrentDevice(PWR__DEVICE_6); }
-void Pwrmng_setDevice7(void) { Pwr_setCurrentDevice(PWR__DEVICE_7); }
+	// update Pwr_Devices[Pwr_DeviceIndex].worktime
+	// update Pwr_Devices[Pwr_DeviceIndex].last_turn_on_timepoint
+	Pwr_Devices[Pwr_DeviceIndex].state = Pwr_DeviceState_on;
+}
+
+void Pwrmng_turnDeviceOff(void)
+{
+	Pwrmng_turnDevice(Pwr_DeviceState_off);
+
+	// update Pwr_Devices[Pwr_DeviceIndex].worktime
+	// update Pwr_Devices[Pwr_DeviceIndex].last_turn_on_timepoint
+	Pwr_Devices[Pwr_DeviceIndex].state = Pwr_DeviceState_off;
+}
+
+void Pwrmng_setDevice0Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_0); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice1Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_1); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice2Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_2); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice3Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_3); Pwr_updateGuiStr(); }
+
+void Pwrmng_setDevice4Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_4); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice5Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_5); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice6Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_6); Pwr_updateGuiStr(); }
+void Pwrmng_setDevice7Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_7); Pwr_updateGuiStr(); }
 
 // Pwrmng private functions
 
@@ -294,28 +322,20 @@ void Pwrmng_turnDevice(Pwr_DeviceState state)
 	PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
 }
 
-void Pwrmng_turnOffProc(void)
-{
-	Pwrmng_turnDevice(Pwr_DeviceState_off);
-
-	// update Pwr_Devices[Pwr_DeviceIndex].worktime
-	// update Pwr_Devices[Pwr_DeviceIndex].last_turn_on_timepoint
-	Pwr_Devices[Pwr_DeviceIndex].state = Pwr_DeviceState_off;
-
-	Pwr_update();
-	Menu_displayMenu(&Pwrmng_PowerMenu);
-}
-
 void Pwrmng_turnOnProc(void)
 {
-	Pwrmng_turnDevice(Pwr_DeviceState_on);
+	Pwrmng_turnDeviceOn();
+	
+	Pwr_updateGuiStr();
+	Menu_displayMenuItemString(MENU__LINE_MESSAGE_2, Pwr_StateStr);
+}
 
-	// update Pwr_Devices[Pwr_DeviceIndex].worktime
-	// update Pwr_Devices[Pwr_DeviceIndex].last_turn_on_timepoint
-	Pwr_Devices[Pwr_DeviceIndex].state = Pwr_DeviceState_on;
-
-	Pwr_update();
-	Menu_displayMenu(&Pwrmng_PowerMenu);
+void Pwrmng_turnOffProc(void)
+{
+	Pwrmng_turnDeviceOff();
+	
+	Pwr_updateGuiStr();
+	Menu_displayMenuItemString(MENU__LINE_MESSAGE_2, Pwr_StateStr);
 }
 
 void Pwrmng_upProc(void)

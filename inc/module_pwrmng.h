@@ -8,14 +8,17 @@ extern Menu_Menu Pwrmng_PowerMenu;
 
 void Pwrmng_init(Menu_Procedure * return_proc);
 
-void Pwrmng_setDevice0(void);
-void Pwrmng_setDevice1(void);
-void Pwrmng_setDevice2(void);
-void Pwrmng_setDevice3(void);
+void Pwrmng_turnDeviceOn(void);
+void Pwrmng_turnDeviceOff(void);
 
-void Pwrmng_setDevice4(void);
-void Pwrmng_setDevice5(void);
-void Pwrmng_setDevice6(void);
-void Pwrmng_setDevice7(void);
+void Pwrmng_setDevice0Proc(void);
+void Pwrmng_setDevice1Proc(void);
+void Pwrmng_setDevice2Proc(void);
+void Pwrmng_setDevice3Proc(void);
+
+void Pwrmng_setDevice4Proc(void);
+void Pwrmng_setDevice5Proc(void);
+void Pwrmng_setDevice6Proc(void);
+void Pwrmng_setDevice7Proc(void);
 
 #endif // MODULE_PWRMNG

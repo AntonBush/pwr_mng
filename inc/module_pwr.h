@@ -30,6 +30,7 @@
 // Init output register
 void Pwr_init(void);
 
+int Pwr_currentDevice(void);
 void Pwr_setCurrentDevice(int device);
 
 #endif // MODULE_PWR

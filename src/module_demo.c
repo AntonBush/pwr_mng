@@ -164,6 +164,12 @@ void Demo_init(void)
 	PortInitStructure.PORT_Pin 	= PWR__DATA_PIN;
 
   PORT_Init(PWR__DATA_PORT, &PortInitStructure);
+	
+/************************ Time Initialization *************************/
+	PORT_StructInit (&PortInitStructure);
+	PortInitStructure.PORT_Pin = PORT_Pin_6 | PORT_Pin_7;
+	PortInitStructure.PORT_MODE = PORT_MODE_ANALOG;
+	PORT_Init (MDR_PORTE, &PortInitStructure);
 }
 
 /*

@@ -623,6 +623,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_demo.c</FilePath>
             </File>
+            <File>
+              <FileName>module_time.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_time.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -697,6 +702,11 @@
               <FileName>module_demo.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_demo.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_time.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_time.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -5,6 +5,7 @@
 #include "module_pwr.h"
 #include "module_pwrmng.h"
 #include "module_pwrsts.h"
+#include "module_time.h"
 
 #include <stddef.h>
 //#include "types.h"
@@ -13,7 +14,7 @@
 #include "text.h"
 //#include "leds.h"
 //#include "menu.h"
-//#include "time.h"
+#include "time.h"
 //#include "lowpower.h"
 //#include "MDR32F9Qx_port.h"
 //#include "Demo_Init.h"
@@ -28,6 +29,7 @@
 static Menu_Menu * App_CurrentMenu;
 static Menu_Menu * App_PreviousMenus[APP__MAX_MENU_LEVELS];
 static size_t App_MenuLevel;
+static int App_UpdateGuiSoon = 0;
 
 static int App_isValidCurrentMenu(void)
 {
@@ -47,11 +49,11 @@ static int App_isValidCurrentMenu(void)
 	return 1;
 }
 
-/* Look up statistics */
-static Menu_MenuItem App_Power14MenuItems[] = { { "Device 1",	&Pwrmng_PowerMenu, 	Pwrmng_setDevice0 }
-																							, { "Device 2", &Pwrmng_PowerMenu, 	Pwrmng_setDevice1 }
-																							, { "Device 3", &Pwrmng_PowerMenu, 	Pwrmng_setDevice2 }
-																							, { "Device 4", &Pwrmng_PowerMenu, 	Pwrmng_setDevice3 }
+/* Turn on/off devices */
+static Menu_MenuItem App_Power14MenuItems[] = { { "Device 1",	&Pwrmng_PowerMenu, 	Pwrmng_setDevice0Proc }
+																							, { "Device 2", &Pwrmng_PowerMenu, 	Pwrmng_setDevice1Proc }
+																							, { "Device 3", &Pwrmng_PowerMenu, 	Pwrmng_setDevice2Proc }
+																							, { "Device 4", &Pwrmng_PowerMenu, 	Pwrmng_setDevice3Proc }
 																							, { "Return", 	NULL, 							App_returnProc }
 																							};
 
@@ -65,10 +67,10 @@ static Menu_Menu App_Power14Menu = { "Power Menu 1-4"
 																	, NULL
 																	};
 
-static Menu_MenuItem App_Power58MenuItems[] = { { "Device 5", &Pwrmng_PowerMenu, 	Pwrmng_setDevice4 }
-																							, { "Device 6", &Pwrmng_PowerMenu, 	Pwrmng_setDevice5 }
-																							, { "Device 7", &Pwrmng_PowerMenu, 	Pwrmng_setDevice6 }
-																							, { "Device 8", &Pwrmng_PowerMenu, 	Pwrmng_setDevice7 }
+static Menu_MenuItem App_Power58MenuItems[] = { { "Device 5", &Pwrmng_PowerMenu, 	Pwrmng_setDevice4Proc }
+																							, { "Device 6", &Pwrmng_PowerMenu, 	Pwrmng_setDevice5Proc }
+																							, { "Device 7", &Pwrmng_PowerMenu, 	Pwrmng_setDevice6Proc }
+																							, { "Device 8", &Pwrmng_PowerMenu, 	Pwrmng_setDevice7Proc }
 																							, { "Return", 	NULL, 							App_returnProc }
 																							};
 
@@ -99,10 +101,10 @@ static Menu_Menu App_PowerMenu = { "Power Menu"
 																	};
 
 /* Look up statistics */
-static Menu_MenuItem App_Stats14MenuItems[] = { { "Device 1",	&Pwrsts_StatsMenu, 	Pwrsts_setDevice0 }
-																							, { "Device 2", &Pwrsts_StatsMenu, 	Pwrsts_setDevice1 }
-																							, { "Device 3", &Pwrsts_StatsMenu, 	Pwrsts_setDevice2 }
-																							, { "Device 4", &Pwrsts_StatsMenu, 	Pwrsts_setDevice3 }
+static Menu_MenuItem App_Stats14MenuItems[] = { { "Device 1",	&Pwrsts_StatsMenu, 	Pwrsts_setDevice0Proc }
+																							, { "Device 2", &Pwrsts_StatsMenu, 	Pwrsts_setDevice1Proc }
+																							, { "Device 3", &Pwrsts_StatsMenu, 	Pwrsts_setDevice2Proc }
+																							, { "Device 4", &Pwrsts_StatsMenu, 	Pwrsts_setDevice3Proc }
 																							, { "Return", 	NULL, 							App_returnProc }
 																							};
 
@@ -116,10 +118,10 @@ static Menu_Menu App_Stats14Menu = { "Stats Menu 1-4"
 																	, NULL
 																	};
 
-static Menu_MenuItem App_Stats58MenuItems[] = { { "Device 5", &Pwrsts_StatsMenu, 	Pwrsts_setDevice4 }
-																							, { "Device 6", &Pwrsts_StatsMenu, 	Pwrsts_setDevice5 }
-																							, { "Device 7", &Pwrsts_StatsMenu,	Pwrsts_setDevice6 }
-																							, { "Device 8", &Pwrsts_StatsMenu,	Pwrsts_setDevice7 }
+static Menu_MenuItem App_Stats58MenuItems[] = { { "Device 5", &Pwrsts_StatsMenu, 	Pwrsts_setDevice4Proc }
+																							, { "Device 6", &Pwrsts_StatsMenu, 	Pwrsts_setDevice5Proc }
+																							, { "Device 7", &Pwrsts_StatsMenu,	Pwrsts_setDevice6Proc }
+																							, { "Device 8", &Pwrsts_StatsMenu,	Pwrsts_setDevice7Proc }
 																							, { "Return", 	NULL, 							App_returnProc }
 																							};
 
@@ -150,9 +152,10 @@ static Menu_Menu App_StatsMenu = { "Stats Menu"
 																	};
 
 /* Main menu */
-static Menu_MenuItem App_MainMenuItems[] = { { "Stats", 		  &App_StatsMenu, NULL }
-																						, { "Manage", 	  &App_PowerMenu,	NULL }
-																						, { "Force Send", NULL,          	NULL }
+static Menu_MenuItem App_MainMenuItems[] = { { "Stats",	&App_StatsMenu, NULL }
+																						, { "Manage",	&App_PowerMenu,	NULL }
+																						, { "SetTime", &Time_SetTimeMenu, NULL }
+																						, { "Force Send", NULL, NULL }
 																						};
 
 static Menu_Menu MainMenu = { "Main menu"
@@ -168,10 +171,10 @@ static Menu_Menu MainMenu = { "Main menu"
 void App_init(void)
 {
   Demo_init();
+  Time_init(App_returnProc);
 	Pwr_init();
 	Pwrmng_init(App_returnProc);
 	Pwrsts_init(App_returnProc);
-  //Calendar_Init();
 
   App_CurrentMenu = &MainMenu;
 	App_MenuLevel = 0;
@@ -213,12 +216,22 @@ void App_down(void)
 void App_update(void)
 {
 	Pwrsts_update();
+	
+	if (App_UpdateGuiSoon)
+	{
+		if ( !App_isValidCurrentMenu()
+				|| App_CurrentMenu->update == NULL
+				) return;
 
-	if ( !App_isValidCurrentMenu()
-			|| App_CurrentMenu->update == NULL
-			) return;
+		App_CurrentMenu->update();
 
-	App_CurrentMenu->update();
+		App_UpdateGuiSoon = 0;
+	}
+}
+
+void App_updateGui(void)
+{
+	App_UpdateGuiSoon = 1;
 }
 
 // Common procedures for menu interaction

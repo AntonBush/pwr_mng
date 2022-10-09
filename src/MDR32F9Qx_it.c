@@ -26,6 +26,8 @@
 #include "leds.h"
 #include "time.h"
 
+#include "module_app.h"
+
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
   */
@@ -179,9 +181,9 @@ void BACKUP_IRQHandler(void)
 
     /* If counter is equal to 86339: one day was elapsed */
     tmp = BKP_RTC_GetCounter();
-    if ((tmp / 3600 == 23) &&
-        (((tmp % 3600) / 60) == 59) &&
-        (((tmp % 3600) % 60) == 59))
+    if ((tmp / 3600 == 24) &&
+        (((tmp % 3600) / 60) == 00) &&
+        (((tmp % 3600) % 60) == 00))
     {
       /* Wait until last write operation on RTC registers has finished */
       BKP_RTC_WaitForUpdate();
@@ -193,6 +195,9 @@ void BACKUP_IRQHandler(void)
       /* Increment the date */
       Date_Update();
     }
+
+		App_updateGui();
+
     BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);
   }
 }

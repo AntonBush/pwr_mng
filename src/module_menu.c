@@ -1,21 +1,11 @@
 #include "module_menu.h"
 
-#include "text.h"
 #include "lcd.h"
 #include "gl.h"
 
 #include <string.h>
 
-static void Menu_displayMenuItemString(uint32_t y, ucint8_t * str)
-{
-  uint32_t x;
-
-  LCD_PUTS(0, y, "                                        ");
-  x = (MAX_X - (CurrentFont->Width * strlen((const char *)str))) / 2;
-  LCD_PUTS(x, y, str);
-}
-
-static void Menu_displayMenuTitle(ucint8_t * str)
+void Menu_displayMenuTitle(ucint8_t * str)
 {
   uint32_t x, y;
   sFONT *OldFont = CurrentFont;
@@ -33,6 +23,32 @@ static void Menu_displayMenuTitle(ucint8_t * str)
 
   CurrentFont = OldFont;
   CurrentMethod = OldMethod;
+}
+
+void Menu_displayString(uint32_t y, ucint8_t * str)
+{
+  uint32_t x;
+
+  CurrentMethod = MET_AND;
+  x = (MAX_X - (CurrentFont->Width * strlen((const char *)str))) / 2;
+  LCD_PUTS(x, y, str);
+}
+
+void Menu_displayMenuItemString(uint32_t y, ucint8_t * str)
+{
+  Menu_displayString(y, "                                        ");
+  Menu_displayString(y, str);
+}
+
+void Menu_highlightMenuItemString(uint32_t y, ucint8_t * str)
+{
+  uint32_t x;
+
+  x = (MAX_X - (CurrentFont->Width * strlen((const char *)str))) / 2;
+
+  /* Highlight selected item */
+  CurrentMethod = MET_NOT_XOR;
+  LCD_PUTS(x, y, str);
 }
 
 int Menu_isValidMenu(Menu_Menu * menu)
@@ -91,8 +107,7 @@ void Menu_selectUpperItem(Menu_Menu * menu)
   }
 
   /* Display new menu item as selected */
-  CurrentMethod = MET_NOT_XOR;
-  LCD_PUTS(0, (menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
+  Menu_highlightMenuItemString((menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
 }
 
 void Menu_selectLowerItem(Menu_Menu * menu)
@@ -120,4 +135,3 @@ void Menu_selectLowerItem(Menu_Menu * menu)
   CurrentMethod = MET_NOT_XOR;
   LCD_PUTS(0, (menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
 }
-
