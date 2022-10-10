@@ -215,10 +215,10 @@ void App_down(void)
 
 void App_update(void)
 {
-	Pwrsts_update();
-	
 	if (App_UpdateGuiSoon)
 	{
+		Pwrsts_update();
+
 		if ( !App_isValidCurrentMenu()
 				|| App_CurrentMenu->update == NULL
 				) return;

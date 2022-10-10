@@ -8,6 +8,8 @@
 
 // Private functions prototypes
 
+static void Time_setRawTime(uint32_t time);
+
 static void Time_upProc(void);
 static void Time_selectProc(void);
 static void Time_downProc(void);
@@ -42,6 +44,8 @@ static size_t Time_SecondStrStrLength = MENU__COUNT_OF(Time_SecondStr);
 static uint8_t Time_TimeStr[] = { '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0' };
 static size_t Time_TimeStrLength = MENU__COUNT_OF(Time_TimeStr);
 
+static uint32_t Time_NPassedDays = 0;
+
 #define TIME__RETURN_ITEM_INDEX 4
 static Menu_MenuItem Time_SetTimeMenuItems[] = { { Time_HourStr, NULL, Time_changeTimeProc }
 																								, { Time_MinuteStr, NULL, Time_changeTimeProc }
@@ -64,6 +68,7 @@ Menu_Menu Time_SetTimeMenu = { "Set time"
 
 void Time_init(Menu_Procedure * return_proc)
 {
+	unsigned int i;
 	uint32_t tmp;
 
 	Time_SetTimeMenuItems[TIME__RETURN_ITEM_INDEX].proc = return_proc;
@@ -76,20 +81,26 @@ void Time_init(Menu_Procedure * return_proc)
 	// if backup was reset (first run)
   if (MDR_BKP->REG_00 != 0x1234)
   {
-		/* Set the RTC counter value */
-		BKP_RTC_SetCounter(0);
-		/* Wait until last write operation on RTC registers has finished */
-		BKP_RTC_WaitForUpdate();
+		Time_setRawTime(0);
 
 		MDR_BKP->REG_00 = 0x1234;
 		/* Wait until last write operation on RTC registers has finished */
+    BKP_RTC_WaitForUpdate();
   }
-  else if (tmp = BKP_RTC_GetCounter() / 86400, tmp != 0)
+  else if (tmp = Time_getRawTime(), tmp / 86400 != 0)
   {
-		BKP_RTC_SetCounter(tmp % 86400);
+		for (i = 0; i < tmp / 86400; ++i)
+		{
+			Time_addPassedDay();
+		}
+		
+		Time_setRawTime(tmp % 86400);
   }
-	
-	BKP_RTC_WaitForUpdate();
+}
+
+uint32_t Time_getRawTime(void)
+{
+	return BKP_RTC_GetCounter();
 }
 
 Time_TimeEdit Time_getTime(void)
@@ -97,7 +108,7 @@ Time_TimeEdit Time_getTime(void)
 	uint32_t tmp;
 	Time_TimeEdit time;
 	
-	tmp = BKP_RTC_GetCounter();
+	tmp = Time_getRawTime();
 	time.hour = tmp / 3600;
 	time.minute = tmp / 60 % 60;
 	time.second = tmp % 60;
@@ -111,13 +122,32 @@ void Time_setTime(Time_TimeEdit time)
 			|| (59 < time.minute)
 			|| (59 < time.second)) return;
 	
-	BKP_RTC_SetCounter(time.hour * 3600 + time.minute * 60 + time.second);
-	BKP_RTC_WaitForUpdate();
+	Time_setRawTime(time.hour * 3600 + time.minute * 60 + time.second);
 	
 	Time_updateGuiStr();
 }
 
+uint32_t Time_getNPassedDays(void)
+{
+	uint32_t tmp = Time_NPassedDays;
+	Time_NPassedDays = 0;
+	return tmp;
+}
+
+void Time_addPassedDay(void)
+{
+	++Time_NPassedDays;
+}
+
 // Private functions
+
+void Time_setRawTime(uint32_t time)
+{
+  /* Set the RTC counter value */
+	BKP_RTC_SetCounter(time);
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+}
 
 void Time_upProc(void)
 {

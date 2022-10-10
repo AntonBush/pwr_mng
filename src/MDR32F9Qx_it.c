@@ -27,6 +27,7 @@
 #include "time.h"
 
 #include "module_app.h"
+#include "module_time.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
@@ -192,6 +193,7 @@ void BACKUP_IRQHandler(void)
       /* Wait until last write operation on RTC registers has finished */
       BKP_RTC_WaitForUpdate();
 
+			Time_addPassedDay();
       /* Increment the date */
       Date_Update();
     }
