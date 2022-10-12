@@ -36,7 +36,7 @@ void Menu_displayString(uint32_t y, ucint8_t * str)
 
 void Menu_displayMenuItemString(uint32_t y, ucint8_t * str)
 {
-  Menu_displayString(y, "                                        ");
+  Menu_displayString(y, "                      ");
   Menu_displayString(y, str);
 }
 
@@ -81,8 +81,7 @@ void Menu_displayMenu(Menu_Menu * menu)
   }
 
   /* Highlight selected item */
-  CurrentMethod = MET_NOT_XOR;
-  LCD_PUTS(0, (menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
+  Menu_highlightMenuItemString((menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                      ");
 }
 
 void Menu_selectUpperItem(Menu_Menu * menu)
@@ -107,7 +106,7 @@ void Menu_selectUpperItem(Menu_Menu * menu)
   }
 
   /* Display new menu item as selected */
-  Menu_highlightMenuItemString((menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
+  Menu_highlightMenuItemString((menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                      ");
 }
 
 void Menu_selectLowerItem(Menu_Menu * menu)
@@ -132,6 +131,5 @@ void Menu_selectLowerItem(Menu_Menu * menu)
   }
 
   /* Display new menu item as selected */
-  CurrentMethod = MET_NOT_XOR;
-  LCD_PUTS(0, (menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                                        ");
+  Menu_highlightMenuItemString((menu->item_index * (CurrentFont->Height + 2) + CurrentFont->Height + 4), "                      ");
 }

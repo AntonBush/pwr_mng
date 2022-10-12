@@ -33,16 +33,16 @@ static void Time_configureRtc(void);
 static Time_TimeEdit Time_Time = { 0, 0, 0 };
 
 static uint8_t Time_HourStr[] = { '0', '0', 'h', '\0' };
-static size_t Time_HourStrLength = MENU__COUNT_OF(Time_HourStr);
+//static size_t Time_HourStrLength = MENU__COUNT_OF(Time_HourStr);
 
 static uint8_t Time_MinuteStr[] = { '0', '0', 'm', '\0' };
-static size_t Time_MinuteStrLength = MENU__COUNT_OF(Time_MinuteStr);
+//static size_t Time_MinuteStrLength = MENU__COUNT_OF(Time_MinuteStr);
 
 static uint8_t Time_SecondStr[] = { '0', '0', 's', '\0' };
-static size_t Time_SecondStrStrLength = MENU__COUNT_OF(Time_SecondStr);
+//static size_t Time_SecondStrStrLength = MENU__COUNT_OF(Time_SecondStr);
 
 static uint8_t Time_TimeStr[] = { '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0' };
-static size_t Time_TimeStrLength = MENU__COUNT_OF(Time_TimeStr);
+//static size_t Time_TimeStrLength = MENU__COUNT_OF(Time_TimeStr);
 
 static uint32_t Time_NPassedDays = 0;
 
@@ -185,7 +185,7 @@ void Time_updateProc(void)
 	Menu_displayMenuItemString(MENU__LINE_MESSAGE_5, Time_TimeStr);
 	if (Time_SetTimeMenu.item_index == TIME__RETURN_ITEM_INDEX)
 	{
-		Menu_highlightMenuItemString(MENU__LINE_MESSAGE_5, "                                        ");
+		Menu_highlightMenuItemString(MENU__LINE_MESSAGE_5, "                      ");
 	}
 }
 

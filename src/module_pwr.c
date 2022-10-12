@@ -2,6 +2,8 @@
 #include "module_pwrsts.h"
 #include "module_pwrmng.h"
 
+#include "module_time.h"
+
 // Pwr
 
 // Pwr typedefs
@@ -116,7 +118,7 @@ static uint8_t Pwrsts_WorktimeStr[] = { 'W', 'o', 'r', 'k', 'T'
 // h: 7, 8
 // m: 10, 11
 // s: 13, 14
-static size_t Pwrsts_WorktimeStrLength = MENU__COUNT_OF(Pwrsts_WorktimeStr);
+//static size_t Pwrsts_WorktimeStrLength = MENU__COUNT_OF(Pwrsts_WorktimeStr);
 
 static uint8_t Pwrsts_PreviousWorktimeStr[] = { 'P', 'W', 'o', 'r', 'k'
 																							, 'T', ':', ' ', '.', '.'
@@ -126,7 +128,7 @@ static uint8_t Pwrsts_PreviousWorktimeStr[] = { 'P', 'W', 'o', 'r', 'k'
 // h: 8, 9
 // m: 11, 12
 // s: 14, 15
-static size_t Pwrsts_PreviousWorktimeStrLength = MENU__COUNT_OF(Pwrsts_PreviousWorktimeStr);
+//static size_t Pwrsts_PreviousWorktimeStrLength = MENU__COUNT_OF(Pwrsts_PreviousWorktimeStr);
 
 
 static Menu_MenuItem Pwrsts_StatsMenuItems[] = { { Pwr_DeviceStr, 							NULL, NULL }
@@ -158,7 +160,6 @@ void Pwrsts_init(Menu_Procedure * return_proc)
 #define PWRSTS__TWELVE_HOURS (12 * 3600)
 void Pwrsts_update(void)
 {
-  unsigned int i;
   uint32_t time, n_passed_days;
 
   time = Time_getRawTime();
