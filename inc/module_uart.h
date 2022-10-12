@@ -13,19 +13,18 @@ void Uart_init(void);
 int Uart_getChar(void);
 // param 'str' must contain '\0' character
 // return number of recieved chars
-int Uart_getString(uint8_t * str);
+int Uart_getString(uint8_t *str);
 bool Uart_isRecieveBufferEmpty(void);
 
 // return TRUE if successfully
 bool Uart_putChar(uint8_t ch);
 // param 'str' must contain '\0' character
 // return number of recieved chars
-int Uart_putString(uint8_t * str);
+int Uart_putString(uint8_t *str);
 // if it is impossible to put whole string
 // buffer will not be changed
-bool Uart_putWholeString(uint8_t * str);
+bool Uart_putWholeString(uint8_t *str);
 bool Uart_isSendBufferFull(void);
-
 
 // uart buffer operations
 

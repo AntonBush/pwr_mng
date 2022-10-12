@@ -6,7 +6,7 @@
 
 extern Menu_Menu Pwrmng_PowerMenu;
 
-void Pwrmng_init(Menu_Procedure * return_proc);
+void Pwrmng_init(Menu_Procedure *return_proc);
 
 void Pwrmng_turnDeviceOn(void);
 void Pwrmng_turnDeviceOff(void);

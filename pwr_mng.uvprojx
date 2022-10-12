@@ -628,6 +628,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_time.c</FilePath>
             </File>
+            <File>
+              <FileName>module_interrupt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_interrupt.c</FilePath>
+            </File>
+            <File>
+              <FileName>module_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -707,6 +717,16 @@
               <FileName>module_time.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_time.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_interrupt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_interrupt.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_uart.h</FilePath>
             </File>
           </Files>
         </Group>

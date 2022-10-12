@@ -6,9 +6,9 @@
 
 extern Menu_Menu Pwrsts_StatsMenu;
 
-void Pwrsts_init(Menu_Procedure * return_proc);
+void Pwrsts_init(Menu_Procedure *return_proc);
 
-uint8_t * Pwrsts_getStats(void);
+uint8_t *Pwrsts_getStats(void);
 
 void Pwrsts_checkPoint(uint32_t time);
 void Pwrsts_updateStats(uint32_t time);

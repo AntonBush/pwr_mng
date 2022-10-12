@@ -2,3 +2,8 @@
 /Listings
 /JLinkLog.txt
 /pwr_mng.uvguix.*
+/.clang-format
+/.eide*
+/pwr_mng.code*
+/.cmsis
+/.vscode
