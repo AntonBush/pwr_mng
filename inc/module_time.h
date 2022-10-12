@@ -16,6 +16,8 @@ void Time_init(Menu_Procedure * return_proc);
 
 uint32_t Time_getRawTime(void);
 Time_TimeEdit Time_getTime(void);
+
+void Time_setRawTime(uint32_t time);
 void Time_setTime(Time_TimeEdit time);
 
 uint32_t Time_getNPassedDays(void);

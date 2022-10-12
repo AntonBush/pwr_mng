@@ -209,9 +209,10 @@ void SenderFuncFIFODemo(void)
 {
   if (error_flag == 0)
   {
-    for (; ((UART_GetFlagStatus (MDR_UART1, UART_FLAG_TXFF) == RESET) && (send_buffer_pos < SEND_BUFFER_SIZE)); send_buffer_pos++)
+		while (UART_GetFlagStatus(MDR_UART1, UART_FLAG_TXFF) == RESET
+						&& send_buffer_pos < SEND_BUFFER_SIZE)
     {
-      UART_SendData(MDR_UART1, SendBuffer[send_buffer_pos]);
+      UART_SendData(MDR_UART1, SendBuffer[send_buffer_pos++]);
     }
   }
 }
@@ -229,8 +230,8 @@ void ReceiverFuncFIFODemo(void)
 
   if (error_flag == 0)
   {
-    for (; ((UART_GetFlagStatus(MDR_UART1, UART_FLAG_RXFE) == RESET) && (receive_buffer_pos < RECEIVE_BUFFER_SIZE) && (error_flag == 0));
-             receive_buffer_pos++)
+		while (UART_GetFlagStatus(MDR_UART1, UART_FLAG_RXFE) == RESET
+						&& receive_buffer_pos < RECEIVE_BUFFER_SIZE)
     {
       receive_data = UART_ReceiveData(MDR_UART1);
 
@@ -240,11 +241,10 @@ void ReceiverFuncFIFODemo(void)
         /* Print appropriate messages on LCD in case of errors */
         UARTDisplayError(UART_Flags(receive_data));
         error_flag = 1;
+				break;
       }
-      else
-      {
-        ReceiveBuffer[receive_buffer_pos] = UART_Data(receive_data);
-      }
+
+			ReceiveBuffer[receive_buffer_pos++] = UART_Data(receive_data);
     }
   }
 }
@@ -310,13 +310,9 @@ void UARTwFIFOFunc(void) {
       pdata = SendData[key - 1];
       for (send_string_pos = 0, data_size = 1; send_string_pos < SEND_BUFFER_SIZE; data_size++)
       {
-        for (i = 0; i < data_size; send_string_pos++, i++)
+        for (i = 0; (i < SEND_STRING_SIZE) && (send_string_pos < SEND_BUFFER_SIZE); i++)
         {
-          SendBuffer[send_string_pos] = pdata[i];
-        }
-        for (; ((i < SEND_STRING_SIZE) && (send_string_pos < SEND_BUFFER_SIZE)); send_string_pos++, i++)
-        {
-          SendBuffer[send_string_pos] = '#';
+          SendBuffer[send_string_pos++] = (i < data_size) ? pdata[i] : '#';
         }
       }
 

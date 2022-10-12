@@ -7,7 +7,11 @@
 extern Menu_Menu Pwrsts_StatsMenu;
 
 void Pwrsts_init(Menu_Procedure * return_proc);
-void Pwrsts_update(void);
+
+uint8_t * Pwrsts_getStats(void);
+
+void Pwrsts_checkPoint(uint32_t time);
+void Pwrsts_updateStats(uint32_t time);
 
 void Pwrsts_setDevice0Proc(void);
 void Pwrsts_setDevice1Proc(void);

@@ -105,9 +105,6 @@ void Pwr_waitFor(unsigned int ticks)
 static void Pwrsts_updateGuiStr(void);
 static void Pwrsts_updateProc(void);
 
-static void Pwrsts_checkPoint(uint32_t time);
-static void Pwrsts_updateStats(uint32_t time);
-
 // Pwrsts private variables
 
 static uint8_t Pwrsts_WorktimeStr[] = { 'W', 'o', 'r', 'k', 'T'
@@ -148,8 +145,6 @@ Menu_Menu Pwrsts_StatsMenu = { "Power stats"
 															, NULL
 															};
 
-unsigned int Pwrsts_SendStatsCounter = 0;
-
 // Pwrsts public functions
 
 void Pwrsts_init(Menu_Procedure * return_proc)
@@ -157,33 +152,36 @@ void Pwrsts_init(Menu_Procedure * return_proc)
 	Pwrsts_StatsMenu.select = return_proc;
 }
 
-#define PWRSTS__TWELVE_HOURS (12 * 3600)
-void Pwrsts_update(void)
+uint8_t * Pwrsts_getStats(void)
 {
-  uint32_t time, n_passed_days;
+	static uint8_t stats[] = { '0', '\0' };
+	
+	// update string
+	
+	return stats;
+}
 
-  time = Time_getRawTime();
-  n_passed_days = Time_getNPassedDays();
+void Pwrsts_checkPoint(uint32_t time)
+{
+	unsigned int i;
+	for (i = 0; i < PWR__N_DEVICES; ++i)
+	{
+		Pwr_Device * device = Pwr_Devices + i;
+		device->previous_worktime = device->worktime;
+		device->worktime = 0;
+		device->last_update = time;
+	}
+}
 
-  if (0 < n_passed_days)
-  {
-    Pwrsts_checkPoint(time);
-
-    if (PWRSTS__TWELVE_HOURS <= time)
-    {
-      ++Pwrsts_SendStatsCounter;
-    }
-  }
-  
-  if ((Pwrsts_SendStatsCounter == 0)
-      || (Pwrsts_SendStatsCounter == 1 && PWRSTS__TWELVE_HOURS <= time))
-  {
-    Pwrsts_checkPoint(time);
-  }
-  else
-  {
-    Pwrsts_updateStats(time);
-  }
+void Pwrsts_updateStats(uint32_t time)
+{
+	unsigned int i;
+	for (i = 0; i < PWR__N_DEVICES; ++i)
+	{
+		Pwr_Device * device = Pwr_Devices + i;
+		device->worktime += time - device->last_update;
+		device->last_update = time;
+	}
 }
 
 void Pwrsts_setDevice0Proc(void) { Pwr_setCurrentDevice(PWR__DEVICE_0); Pwrsts_updateGuiStr(); }
@@ -254,39 +252,6 @@ void Pwrsts_updateProc(void)
 	Menu_displayMenu(&Pwrsts_StatsMenu);
 }
 
-// Send stats by UART and ++Pwrsts_SendStatsCounter
-void Pwrsts_sendStats()
-{
-	// Send by UART
-	++Pwrsts_SendStatsCounter;
-}
-
-void Pwrsts_checkPoint(uint32_t time)
-{
-	unsigned int i;
-  
-	Pwrsts_sendStats();
-	
-	for (i = 0; i < PWR__N_DEVICES; ++i)
-	{
-		Pwr_Device * device = Pwr_Devices + i;
-		device->previous_worktime = device->worktime;
-		device->worktime = 0;
-		device->last_update = time;
-	}
-}
-
-void Pwrsts_updateStats(uint32_t time)
-{
-	unsigned int i;
-	for (i = 0; i < PWR__N_DEVICES; ++i)
-	{
-		Pwr_Device * device = Pwr_Devices + i;
-		device->worktime += time - device->last_update;
-		device->last_update = time;
-	}
-}
-
 // Pwrmng
 
 // Pwrsts private functions prototypes
@@ -301,7 +266,7 @@ static void Pwrmng_downProc(void);
 
 // Pwrmng private variables
 
-#define ReturnItemIndex 4
+#define PWRMNG__RETURN_ITEM_INDEX 4
 static Menu_MenuItem Pwrmng_PowerMenuItems[] = { { Pwr_DeviceStr, NULL, NULL }
 																								, { Pwr_StateStr, NULL, NULL }
 																								, { "Turn on", 		NULL, Pwrmng_turnOnProc }
@@ -323,7 +288,7 @@ Menu_Menu Pwrmng_PowerMenu = { "Power stats"
 
 void Pwrmng_init(Menu_Procedure * return_proc)
 {
-	Pwrmng_PowerMenuItems[ReturnItemIndex].proc = return_proc;
+	Pwrmng_PowerMenuItems[PWRMNG__RETURN_ITEM_INDEX].proc = return_proc;
 }
 
 void Pwrmng_turnDeviceOn(void)

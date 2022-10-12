@@ -6,15 +6,20 @@
 #include "module_pwrmng.h"
 #include "module_pwrsts.h"
 #include "module_time.h"
+#include "module_interrupt.h"
+#include "module_uart.h"
+
+#include "joystick.h"
 
 #include <stddef.h>
+#include <string.h>
 //#include "types.h"
 //#include "lcd.h"
 //#include "gl.h"
-#include "text.h"
+//#include "text.h"
 //#include "leds.h"
 //#include "menu.h"
-#include "time.h"
+//#include "time.h"
 //#include "lowpower.h"
 //#include "MDR32F9Qx_port.h"
 //#include "Demo_Init.h"
@@ -24,30 +29,33 @@
 //#include "systick.h"
 //#include <string.h>
 
+// Private function prototypes
+
+static void App_up(void);
+static void App_select(void);
+static void App_down(void);
+static void App_update(void);
+
+static void App_updateGui(void);
+
+static void App_upProc(void);
+static void App_selectProc(void);
+static void App_downProc(void);
+static void App_returnProc(void);
+
+static bool App_isValidCurrentMenu(void);
+
+static void App_sendStats(void);
+static void App_updateStats(void);
+
+// Private variables
+
 #define APP__MAX_MENU_LEVELS 4
 
 static Menu_Menu * App_CurrentMenu;
 static Menu_Menu * App_PreviousMenus[APP__MAX_MENU_LEVELS];
 static size_t App_MenuLevel;
-static int App_UpdateGuiSoon = 0;
-
-static int App_isValidCurrentMenu(void)
-{
-	size_t i;
-
-	if ( App_CurrentMenu == NULL
-			|| APP__MAX_MENU_LEVELS <= App_MenuLevel
-			) return 0;
-
-	for (i = 0; i <= App_MenuLevel; ++i)
-	{
-		if ( App_PreviousMenus[i] == NULL
-				|| !Menu_isValidMenu(App_PreviousMenus[i])
-				) return 0;
-	}
-
-	return 1;
-}
+static volatile bool App_UpdateGuiSoon = FALSE;
 
 /* Turn on/off devices */
 static Menu_MenuItem App_Power14MenuItems[] = { { "Device 1",	&Pwrmng_PowerMenu, 	Pwrmng_setDevice0Proc }
@@ -168,6 +176,10 @@ static Menu_Menu MainMenu = { "Main menu"
 														, NULL
 														};
 
+static int App_SendStatsCounter = 1;
+
+// Public functions
+
 void App_init(void)
 {
   Demo_init();
@@ -175,6 +187,7 @@ void App_init(void)
 	Pwr_init();
 	Pwrmng_init(App_returnProc);
 	Pwrsts_init(App_returnProc);
+	Uart_init();
 
   App_CurrentMenu = &MainMenu;
 	App_MenuLevel = 0;
@@ -185,6 +198,46 @@ void App_init(void)
 
 	if (App_isValidCurrentMenu()) Menu_displayMenu(App_CurrentMenu);
 }
+
+void App_run(void)
+{
+	uint32_t key = NOKEY;
+  uint32_t last_key = NOKEY;
+
+  while (TRUE)
+  {
+    switch (key)
+    {
+      case SEL:   App_select();	break;
+      case UP:    App_up();   	break;
+      case DOWN:  App_down(); 	break;
+    }
+		
+		do {
+			App_update();
+
+			last_key = key;
+			key = GetKey();
+		} while (key == last_key);
+  }
+}
+
+void App_rtcSecondHandle(void)
+{
+	uint32_t time;
+	
+	App_updateGui();
+
+  /* If counter is equal to 86400: one day was elapsed */
+  time = Time_getRawTime();
+  if (time == 24 * 60 * 60)
+  {
+		Time_setRawTime(0);
+		Time_addPassedDay();
+  }
+}
+
+// Private functions
 
 void App_up(void)
 {
@@ -217,7 +270,7 @@ void App_update(void)
 {
 	if (App_UpdateGuiSoon)
 	{
-		Pwrsts_update();
+		App_updateStats();
 
 		if ( !App_isValidCurrentMenu()
 				|| App_CurrentMenu->update == NULL
@@ -278,4 +331,78 @@ void App_returnProc(void)
   --App_MenuLevel;
 
   Menu_displayMenu(App_CurrentMenu);
+}
+
+bool App_isValidCurrentMenu(void)
+{
+	size_t i;
+
+	if ( App_CurrentMenu == NULL
+			|| APP__MAX_MENU_LEVELS <= App_MenuLevel
+			) return FALSE;
+
+	for (i = 0; i <= App_MenuLevel; ++i)
+	{
+		if ( App_PreviousMenus[i] == NULL
+				|| !Menu_isValidMenu(App_PreviousMenus[i])
+				) return FALSE;
+	}
+
+	return TRUE;
+}
+
+void App_sendStats(void)
+{
+	if (Uart_putWholeString(Pwrsts_getStats()))
+	{
+		if (App_SendStatsCounter < 0)
+		{
+			App_SendStatsCounter = -App_SendStatsCounter + 1;
+		}
+		else
+		{
+			++App_SendStatsCounter;
+		}
+	}
+	else if (0 < App_SendStatsCounter)
+	{
+		App_SendStatsCounter = -App_SendStatsCounter;
+	}
+}
+
+#define APP__TWELVE_HOURS (12 * 60 * 60)
+void App_updateStats(void)
+{
+  uint32_t time, n_passed_days;
+
+  time = Time_getRawTime();
+  n_passed_days = Time_getNPassedDays();
+
+  if (0 < n_passed_days)
+  {
+		if (APP__TWELVE_HOURS <= time)
+		{
+			App_SendStatsCounter = 2;
+		}
+		else
+		{
+			App_SendStatsCounter = 1;
+		}
+  }
+  
+	if (App_SendStatsCounter < 0)
+	{
+			App_SendStats();
+	}
+	
+  if ((App_SendStatsCounter == 1)
+      || (App_SendStatsCounter == 2 && APP__TWELVE_HOURS <= time))
+  {
+		App_SendStats();
+    Pwrsts_checkPoint(time);
+  }
+  else
+  {
+    Pwrsts_updateStats(time);
+  }
 }

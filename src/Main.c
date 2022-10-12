@@ -20,6 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "joystick.h"
 #include "module_app.h"
+#include "module_uart.h"
+#include "module_interrupt.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
@@ -46,27 +48,13 @@ int main(void)
 void main(void)
 #endif
 {
-	uint32_t key = NOKEY;
-  uint32_t last_key = NOKEY;
+	Interrupt_UartReceiveHandler = Uart_recieveBytes;
+	Interrupt_UartSendHandler = Uart_sendBytes;
+	Interrupt_UartLineStateHandler = NULL;
+	Interrupt_RtcSecondHandler = App_rtcSecondHandle;
 
 	App_init();
-
-  while (1)
-  {
-    switch (key)
-    {
-      case SEL:   App_select();	break;
-      case UP:    App_up();   	break;
-      case DOWN:  App_down(); 	break;
-    }
-		
-		do {
-			App_update();
-
-			last_key = key;
-			key = GetKey();
-		} while (key == last_key);
-  }
+	App_run();
 }
 
 /*******************************************************************************

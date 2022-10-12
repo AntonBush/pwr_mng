@@ -8,12 +8,13 @@
 
 #include <MDR32F9Qx_rst_clk.h>
 #include <MDR32F9Qx_port.h>
+#include <MDR32F9Qx_bkp.h>
 
 #define ALL_PORTS_CLK   (RST_CLK_PCLK_PORTA | RST_CLK_PCLK_PORTB | \
                          RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTD | \
                          RST_CLK_PCLK_PORTE | RST_CLK_PCLK_PORTF)
 
-static void Demo_clockConfigure(void)
+static void Demo_configureClock(void)
 {
   /* Configure CPU_PLL clock */
   RST_CLK_CPU_PLLconfig (RST_CLK_CPU_PLLsrcHSIdiv1,0);
@@ -22,11 +23,47 @@ static void Demo_clockConfigure(void)
   RST_CLK_PCLKcmd(ALL_PORTS_CLK, ENABLE);
 }
 
+static void Demo_configureRtc(void)
+{
+  /* Enables the HSE clock for BKP control */
+  RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
+
+  /* Configure LSE as RTC clock source */
+  RST_CLK_LSEconfig(RST_CLK_LSE_ON);
+  /* Wait till LSE is ready */
+  while (RST_CLK_LSEstatus() != SUCCESS)
+  {
+  }
+
+  /* Select the RTC Clock Source */
+  BKP_RTCclkSource(BKP_RTC_LSEclk);
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+
+  /* Sets the RTC prescaler */
+  BKP_RTC_SetPrescaler(RTC_PRESCALER_VALUE);
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+
+  /* Sets the RTC calibrator */
+  BKP_RTC_Calibration(RTC_CalibratorValue);
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+
+  /* Enable the RTC Clock */
+  BKP_RTC_Enable(ENABLE);
+
+  /* Enable the Second interrupt */
+  BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);
+  NVIC_EnableIRQ(BACKUP_IRQn);
+}
+
 void Demo_init(void)
 {
-	PORT_InitTypeDef PortInitStructure;
-	
-  Demo_clockConfigure();
+	PORT_InitTypeDef PortInitStructure;	
+	PORT_StructInit(&PortInitStructure);
+
+  Demo_configureClock();
 
 /************************ LCD Initialization *************************/
 
@@ -166,10 +203,15 @@ void Demo_init(void)
   PORT_Init(PWR__DATA_PORT, &PortInitStructure);
 	
 /************************ Time Initialization *************************/
-	PORT_StructInit (&PortInitStructure);
+	PORT_StructInit(&PortInitStructure);
+
 	PortInitStructure.PORT_Pin = PORT_Pin_6 | PORT_Pin_7;
 	PortInitStructure.PORT_MODE = PORT_MODE_ANALOG;
-	PORT_Init (MDR_PORTE, &PortInitStructure);
+
+	PORT_Init(MDR_PORTE, &PortInitStructure);
+
+/************************ *************************/
+	Demo_configureRtc();
 }
 
 /*

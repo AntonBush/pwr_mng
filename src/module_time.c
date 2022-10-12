@@ -8,8 +8,6 @@
 
 // Private functions prototypes
 
-static void Time_setRawTime(uint32_t time);
-
 static void Time_upProc(void);
 static void Time_selectProc(void);
 static void Time_downProc(void);
@@ -73,11 +71,6 @@ void Time_init(Menu_Procedure * return_proc)
 
 	Time_SetTimeMenuItems[TIME__RETURN_ITEM_INDEX].proc = return_proc;
 
-  /* Enables the HSE clock for BKP control */
-  RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
-
-  Time_configureRtc();
-
 	// if backup was reset (first run)
   if (MDR_BKP->REG_00 != 0x1234)
   {
@@ -116,6 +109,16 @@ Time_TimeEdit Time_getTime(void)
 	return time;
 }
 
+void Time_setRawTime(uint32_t time)
+{
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+  /* Set the RTC counter value */
+	BKP_RTC_SetCounter(time);
+  /* Wait until last write operation on RTC registers has finished */
+  BKP_RTC_WaitForUpdate();
+}
+
 void Time_setTime(Time_TimeEdit time)
 {
 	if ((23 < time.hour)
@@ -140,14 +143,6 @@ void Time_addPassedDay(void)
 }
 
 // Private functions
-
-void Time_setRawTime(uint32_t time)
-{
-  /* Set the RTC counter value */
-	BKP_RTC_SetCounter(time);
-  /* Wait until last write operation on RTC registers has finished */
-  BKP_RTC_WaitForUpdate();
-}
 
 void Time_upProc(void)
 {
@@ -286,36 +281,4 @@ void Time_updateGuiStr(void)
 
 	Time_SecondStr[0] = '0' + (Time_Time.second / 10);
 	Time_SecondStr[1] = '0' + (Time_Time.second % 10);
-}
-
-void Time_configureRtc(void)
-{
-  /* Configure LSE as RTC clock source */
-  RST_CLK_LSEconfig(RST_CLK_LSE_ON);
-  /* Wait till LSE is ready */
-  while (RST_CLK_LSEstatus() != SUCCESS)
-  {
-  }
-
-  /* Select the RTC Clock Source */
-  BKP_RTCclkSource(BKP_RTC_LSEclk);
-  /* Wait until last write operation on RTC registers has finished */
-  BKP_RTC_WaitForUpdate();
-
-  /* Sets the RTC prescaler */
-  BKP_RTC_SetPrescaler(RTC_PRESCALER_VALUE);
-  /* Wait until last write operation on RTC registers has finished */
-  BKP_RTC_WaitForUpdate();
-
-  /* Sets the RTC calibrator */
-  BKP_RTC_Calibration(RTC_CalibratorValue);
-  /* Wait until last write operation on RTC registers has finished */
-  BKP_RTC_WaitForUpdate();
-
-  /* Enable the RTC Clock */
-  BKP_RTC_Enable(ENABLE);
-
-  /* Enable the Second interrupt */
-  BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);
-  NVIC_EnableIRQ(BACKUP_IRQn);
 }
