@@ -3,7 +3,9 @@
 #include <MDR32F9Qx_rst_clk.h>
 #include <MDR32F9Qx_uart.h>
 
-#define UART__BUFFER_SIZE 256
+#include <string.h>
+
+#define UART__BUFFER_SIZE 512
 
 // Typedefs
 
@@ -14,10 +16,10 @@ typedef struct
     size_t end;
 } Uart_Buffer;
 
-// Private variables
+// Variables
 
-static volatile Uart_Buffer Uart_RecieveBuffer;
-static volatile Uart_Buffer Uart_SendBuffer;
+static volatile Uart_Buffer Uart_RecieveBuffer = {{0}, 0, 0};
+static volatile Uart_Buffer Uart_SendBuffer = {{0}, 0, 0};
 
 // Public functions
 
@@ -47,46 +49,118 @@ void Uart_init(void)
 // return <uint8_t> if recieved
 int Uart_getChar(void)
 {
-    return -1;
+    size_t begin = Uart_RecieveBuffer.begin;
+    size_t end = Uart_RecieveBuffer.end;
+    uint8_t ch;
+
+    if (begin == end) {
+        return -1;
+    }
+
+    ch = Uart_RecieveBuffer.data[begin];
+    begin = (begin + 1) % UART__BUFFER_SIZE;
+    return ch;
 }
 // param 'str' must contain '\0' character
 // return number of recieved chars
 int Uart_getString(uint8_t *str)
 {
-    return 0;
+    size_t i;
+
+    for (i = 0; str[i] != '\0'; ++i) {
+        int ch = Uart_getChar();
+        if (ch < 0) {
+            break;
+        } else {
+            str[i] = ch;
+        }
+    }
+
+    return i;
 }
+
 bool Uart_isRecieveBufferEmpty(void)
 {
-    return TRUE;
+    size_t begin = Uart_RecieveBuffer.begin;
+    size_t end = Uart_RecieveBuffer.end;
+
+    return (begin == end) ? TRUE : FALSE;
 }
 
 // return TRUE if successfully
 bool Uart_putChar(uint8_t ch)
 {
-    return FALSE;
+    size_t begin = Uart_RecieveBuffer.begin;
+    size_t end = Uart_RecieveBuffer.end;
+
+    if ((end + 1) % UART__BUFFER_SIZE == begin) {
+        return FALSE;
+    }
+
+    Uart_SendBuffer.data[end] = ch;
+    end = (end + 1) % UART__BUFFER_SIZE;
+    return TRUE;
 }
 // param 'str' must contain '\0' character
 // return number of recieved chars
 int Uart_putString(uint8_t *str)
 {
-    return 0;
+    size_t i;
+
+    for (i = 0; str[i] != '\0' && Uart_putChar(str[i]); ++i)
+        ;
+
+    return i;
 }
 // if it is impossible to put whole string
 // buffer will not be changed
 bool Uart_putWholeString(uint8_t *str)
 {
-    return FALSE;
+    size_t begin = Uart_RecieveBuffer.begin;
+    size_t end = Uart_RecieveBuffer.end;
+    size_t size = (begin <= end) ? (end - begin) : (end + UART__BUFFER_SIZE - begin);
+
+    if (size < strlen((char *)str)) {
+        return FALSE;
+    }
+
+    Uart_putString(str);
+
+    return TRUE;
 }
 bool Uart_isSendBufferFull(void)
 {
-    return TRUE;
+    size_t begin = Uart_RecieveBuffer.begin;
+    size_t end = Uart_RecieveBuffer.end;
+
+    return ((end + 1) % UART__BUFFER_SIZE == begin) ? TRUE : FALSE;
 }
 
 // uart buffer operations
 
 void Uart_recieveBytes(void)
 {
+    static int busy = 0;
+    ++busy;
+    if (1 < busy) {
+        --busy;
+        return;
+    }
+
+    // todo
 }
 void Uart_sendBytes(void)
 {
+    static int busy = 0;
+    ++busy;
+    if (1 < busy) {
+        --busy;
+        return;
+    }
+
+    while (UART_GetFlagStatus(MDR_UART1, UART_FLAG_TXFF) == RESET && !Uart_isSendBufferFull()) {
+        UART_SendData(MDR_UART1, Uart_SendBuffer.data[Uart_SendBuffer.begin]);
+        ++Uart_SendBuffer.begin;
+        Uart_SendBuffer.begin %= UART__BUFFER_SIZE;
+    }
 }

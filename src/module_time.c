@@ -24,9 +24,7 @@ static void Time_reduceProc(void);
 
 static void Time_updateGuiStr(void);
 
-static void Time_configureRtc(void);
-
-// Private variables
+// Variables
 
 static Time_TimeEdit Time_Time = {0, 0, 0};
 
@@ -48,15 +46,17 @@ static uint32_t Time_NPassedDays = 0;
 static Menu_MenuItem Time_SetTimeMenuItems[] = {{Time_HourStr, NULL, Time_changeTimeProc}, {Time_MinuteStr, NULL, Time_changeTimeProc}, {Time_SecondStr, NULL, Time_changeTimeProc}, {"Save", NULL, Time_saveProc}, {Time_TimeStr, NULL, NULL}};
 
 Menu_Menu Time_SetTimeMenu = {"Set time", Time_SetTimeMenuItems, MENU__COUNT_OF(Time_SetTimeMenuItems), 0, Time_upProc, Time_selectProc, Time_downProc, Time_updateProc};
+static Time_ProcedureUint32 *Time_TimeSetCallback = NULL;
 
 // Public functions
 
-void Time_init(Menu_Procedure *return_proc)
+void Time_init(Menu_Procedure *return_proc, Time_ProcedureUint32 *time_set_callback)
 {
     unsigned int i;
     uint32_t tmp;
 
     Time_SetTimeMenuItems[TIME__RETURN_ITEM_INDEX].proc = return_proc;
+    Time_TimeSetCallback = time_set_callback;
 
     // if backup was reset (first run)
     if (MDR_BKP->REG_00 != 0x1234) {
@@ -94,12 +94,18 @@ Time_TimeEdit Time_getTime(void)
 
 void Time_setRawTime(uint32_t time)
 {
+    uint32_t old_time = Time_getRawTime();
+
     /* Wait until last write operation on RTC registers has finished */
     BKP_RTC_WaitForUpdate();
     /* Set the RTC counter value */
     BKP_RTC_SetCounter(time);
     /* Wait until last write operation on RTC registers has finished */
     BKP_RTC_WaitForUpdate();
+
+    if (Time_TimeSetCallback != NULL) {
+        Time_TimeSetCallback(old_time);
+    }
 }
 
 void Time_setTime(Time_TimeEdit time)

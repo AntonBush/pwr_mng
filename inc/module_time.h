@@ -10,9 +10,11 @@ typedef struct
     unsigned int second;
 } Time_TimeEdit;
 
+typedef void(Time_ProcedureUint32)(uint32_t);
+
 extern Menu_Menu Time_SetTimeMenu;
 
-void Time_init(Menu_Procedure *return_proc);
+void Time_init(Menu_Procedure *return_proc, Time_ProcedureUint32 *time_set_callback);
 
 uint32_t Time_getRawTime(void);
 Time_TimeEdit Time_getTime(void);

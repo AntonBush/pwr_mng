@@ -7,3 +7,4 @@
 /pwr_mng.code*
 /.cmsis
 /.vscode
+/build

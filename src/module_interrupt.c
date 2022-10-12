@@ -9,11 +9,11 @@
 
 static void Interrupt_UartXHandler(MDR_UART_TypeDef *uart_x);
 
-// Private variables
+// Variables
 
 Interrupt_Procedure *Interrupt_UartReceiveHandler = NULL;
 Interrupt_Procedure *Interrupt_UartSendHandler = NULL;
-Interrupt_ProcedureUint32 *Uart_LineStateHandler = NULL;
+Interrupt_ProcedureUint32 *Interrupt_UartLineStateHandler = NULL;
 
 Interrupt_Procedure *Interrupt_RtcSecondHandler = NULL;
 
