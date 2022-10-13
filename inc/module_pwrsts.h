@@ -5,7 +5,7 @@
 
 extern Menu_Menu Pwrsts_StatsMenu;
 
-void Pwrsts_init(Menu_Procedure *return_proc);
+void Pwrsts_init(Utility_Procedure *return_proc);
 
 uint8_t *Pwrsts_getStats(void);
 

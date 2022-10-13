@@ -140,7 +140,7 @@ bool Uart_isSendBufferFull(void)
 
 void Uart_recieveBytes(void)
 {
-    static int busy = 0;
+    static volatile int busy = 0;
     ++busy;
     if (1 < busy) {
         --busy;
@@ -151,7 +151,7 @@ void Uart_recieveBytes(void)
 }
 void Uart_sendBytes(void)
 {
-    static int busy = 0;
+    static volatile int busy = 0;
     ++busy;
     if (1 < busy) {
         --busy;

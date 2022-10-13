@@ -14,48 +14,8 @@
                        RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTD | \
                        RST_CLK_PCLK_PORTE | RST_CLK_PCLK_PORTF)
 
-static void Demo_configureClock(void)
-{
-    /* Configure CPU_PLL clock */
-    RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSIdiv1, 0);
-
-    /* Enables the RTCHSE clock on all ports */
-    RST_CLK_PCLKcmd(ALL_PORTS_CLK, ENABLE);
-}
-
-static void Demo_configureRtc(void)
-{
-    /* Enables the HSE clock for BKP control */
-    RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
-
-    /* Configure LSE as RTC clock source */
-    RST_CLK_LSEconfig(RST_CLK_LSE_ON);
-    /* Wait till LSE is ready */
-    while (RST_CLK_LSEstatus() != SUCCESS) {
-    }
-
-    /* Select the RTC Clock Source */
-    BKP_RTCclkSource(BKP_RTC_LSEclk);
-    /* Wait until last write operation on RTC registers has finished */
-    BKP_RTC_WaitForUpdate();
-
-    /* Sets the RTC prescaler */
-    BKP_RTC_SetPrescaler(RTC_PRESCALER_VALUE);
-    /* Wait until last write operation on RTC registers has finished */
-    BKP_RTC_WaitForUpdate();
-
-    /* Sets the RTC calibrator */
-    BKP_RTC_Calibration(RTC_CalibratorValue);
-    /* Wait until last write operation on RTC registers has finished */
-    BKP_RTC_WaitForUpdate();
-
-    /* Enable the RTC Clock */
-    BKP_RTC_Enable(ENABLE);
-
-    /* Enable the Second interrupt */
-    BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);
-    NVIC_EnableIRQ(BACKUP_IRQn);
-}
+static void Demo_configureClock(void);
+static void Demo_configureRtc(void);
 
 void Demo_init(void)
 {
@@ -213,14 +173,45 @@ void Demo_init(void)
     Demo_configureRtc();
 }
 
-/*
-#define PWR__ADDR_PORT MDR_PORTB
-#define PWR__ADDR_PINS (PORT_Pin_0 | PORT_Pin_1 | PORT_Pin_2)
+static void Demo_configureClock(void)
+{
+    /* Configure CPU_PLL clock */
+    RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSIdiv1, 0);
 
-#define PWR__CMD_PORT MDR_PORTB
-#define PWR__CMD_PIN PORT_Pin_3
+    /* Enables the RTCHSE clock on all ports */
+    RST_CLK_PCLKcmd(ALL_PORTS_CLK, ENABLE);
+}
 
-#define PWR__DATA_PORT MDR_PORTB
-#define PWR__DATA_PIN PORT_Pin_4
+static void Demo_configureRtc(void)
+{
+    /* Enables the HSE clock for BKP control */
+    RST_CLK_PCLKcmd(RST_CLK_PCLK_BKP, ENABLE);
 
-*/
+    /* Configure LSE as RTC clock source */
+    RST_CLK_LSEconfig(RST_CLK_LSE_ON);
+    /* Wait till LSE is ready */
+    while (RST_CLK_LSEstatus() != SUCCESS) {
+    }
+
+    /* Select the RTC Clock Source */
+    BKP_RTCclkSource(BKP_RTC_LSEclk);
+    /* Wait until last write operation on RTC registers has finished */
+    BKP_RTC_WaitForUpdate();
+
+    /* Sets the RTC prescaler */
+    BKP_RTC_SetPrescaler(RTC_PRESCALER_VALUE);
+    /* Wait until last write operation on RTC registers has finished */
+    BKP_RTC_WaitForUpdate();
+
+    /* Sets the RTC calibrator */
+    BKP_RTC_Calibration(RTC_CalibratorValue);
+    /* Wait until last write operation on RTC registers has finished */
+    BKP_RTC_WaitForUpdate();
+
+    /* Enable the RTC Clock */
+    BKP_RTC_Enable(ENABLE);
+
+    /* Enable the Second interrupt */
+    BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);
+    NVIC_EnableIRQ(BACKUP_IRQn);
+}

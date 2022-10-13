@@ -21,6 +21,7 @@ static void Time_returnProc(void);
 
 static void Time_increaseProc(void);
 static void Time_reduceProc(void);
+static void Time_updateEdit(void);
 
 static void Time_updateGuiStr(void);
 
@@ -29,24 +30,24 @@ static void Time_updateGuiStr(void);
 static Time_TimeEdit Time_Time = {0, 0, 0};
 
 static uint8_t Time_HourStr[] = {'0', '0', 'h', '\0'};
-// static size_t Time_HourStrLength = MENU__COUNT_OF(Time_HourStr);
+// static size_t Time_HourStrLength = UTILITY__COUNT_OF(Time_HourStr);
 
 static uint8_t Time_MinuteStr[] = {'0', '0', 'm', '\0'};
-// static size_t Time_MinuteStrLength = MENU__COUNT_OF(Time_MinuteStr);
+// static size_t Time_MinuteStrLength = UTILITY__COUNT_OF(Time_MinuteStr);
 
 static uint8_t Time_SecondStr[] = {'0', '0', 's', '\0'};
-// static size_t Time_SecondStrStrLength = MENU__COUNT_OF(Time_SecondStr);
+// static size_t Time_SecondStrStrLength = UTILITY__COUNT_OF(Time_SecondStr);
 
 static uint8_t Time_TimeStr[] = {'.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0'};
-// static size_t Time_TimeStrLength = MENU__COUNT_OF(Time_TimeStr);
+// static size_t Time_TimeStrLength = UTILITY__COUNT_OF(Time_TimeStr);
 
 static uint32_t Time_NPassedDays = 0;
 
 #define TIME__RETURN_ITEM_INDEX 4
 static Menu_MenuItem Time_SetTimeMenuItems[] = {{Time_HourStr, NULL, Time_changeTimeProc}, {Time_MinuteStr, NULL, Time_changeTimeProc}, {Time_SecondStr, NULL, Time_changeTimeProc}, {"Save", NULL, Time_saveProc}, {Time_TimeStr, NULL, NULL}};
 
-Menu_Menu Time_SetTimeMenu = {"Set time", Time_SetTimeMenuItems, MENU__COUNT_OF(Time_SetTimeMenuItems), 0, Time_upProc, Time_selectProc, Time_downProc, Time_updateProc};
-static Time_ProcedureUint32 *Time_TimeSetCallback = NULL;
+Menu_Menu Time_SetTimeMenu = {"Set time", Time_SetTimeMenuItems, UTILITY__COUNT_OF(Time_SetTimeMenuItems), 0, Time_upProc, Time_selectProc, Time_downProc, Time_updateProc};
+static Utility_ProcedureUint32 *Time_TimeSetCallback = NULL;
 
 // Public functions
 
@@ -61,7 +62,7 @@ Time_TimeEdit Time_timeEdit(uint32_t raw_time)
     return time;
 }
 
-void Time_init(Menu_Procedure *return_proc, Time_ProcedureUint32 *time_set_callback)
+void Time_init(Utility_Procedure *return_proc, Utility_ProcedureUint32 *time_set_callback)
 {
     unsigned int i;
     uint32_t tmp;
@@ -142,7 +143,7 @@ void Time_upProc(void)
 void Time_selectProc(void)
 {
     size_t index = Time_SetTimeMenu.item_index;
-    Menu_Procedure *proc = Time_SetTimeMenu.items[index].proc;
+    Utility_Procedure *proc = Time_SetTimeMenu.items[index].proc;
     if (proc != NULL) {
         proc();
     }
@@ -155,6 +156,8 @@ void Time_downProc(void)
 
 void Time_updateProc(void)
 {
+    uint8_t style = LCD__STYLE_NO_STYLE;
+
     Time_TimeEdit time = Time_getTime();
 
     Time_TimeStr[0] = '0' + (time.hour / 10 % 10);
@@ -166,23 +169,23 @@ void Time_updateProc(void)
     Time_TimeStr[6] = '0' + (time.second / 10 % 10);
     Time_TimeStr[7] = '0' + (time.second % 10);
 
-    Menu_displayMenuItemString(MENU__LINE_MESSAGE_5, Time_TimeStr);
     if (Time_SetTimeMenu.item_index == TIME__RETURN_ITEM_INDEX) {
-        Menu_highlightMenuItemString(MENU__LINE_MESSAGE_5, "                      ");
+        style |= LCD__STYLE_HIGHLIGHT;
     }
+
+    Lcd_displayString(Lcd_Line_line5, Time_TimeStr, style);
 }
 
 void Time_highlightItem(void)
 {
-    switch (Time_SetTimeMenu.item_index) {
+    int8_t style = LCD__STYLE_NO_OVERRIDE | LCD__STYLE_HIGHLIGHT;
+    size_t index = Time_SetTimeMenu.item_index;
+
+    switch (index) {
         case 0:
-            Menu_highlightMenuItemString(MENU__LINE_MESSAGE_1, "   ");
-            break;
         case 1:
-            Menu_highlightMenuItemString(MENU__LINE_MESSAGE_2, "   ");
-            break;
         case 2:
-            Menu_highlightMenuItemString(MENU__LINE_MESSAGE_3, "   ");
+            Lcd_displayString(Lcd_Lines[index + 1], "   ", style);
             break;
     }
 }
@@ -210,54 +213,61 @@ void Time_returnProc(void)
     Time_highlightItem();
 }
 
-static void Time_increaseProc(void)
+void Time_increaseProc(void)
 {
     switch (Time_SetTimeMenu.item_index) {
         case 0:
             Time_Time.hour = (Time_Time.hour + 1) % 24;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_1, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_1, Time_HourStr);
             break;
 
         case 1:
             Time_Time.minute = (Time_Time.minute + 1) % 60;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_2, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_2, Time_MinuteStr);
             break;
 
         case 2:
             Time_Time.second = (Time_Time.second + 1) % 60;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_3, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_3, Time_SecondStr);
             break;
+
+        default:
+            return;
     }
+
+    Time_updateEdit();
 }
 
-static void Time_reduceProc(void)
+void Time_reduceProc(void)
 {
     switch (Time_SetTimeMenu.item_index) {
         case 0:
             Time_Time.hour = (Time_Time.hour == 0) ? 23 : Time_Time.hour - 1;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_1, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_1, Time_HourStr);
             break;
 
         case 1:
             Time_Time.minute = (Time_Time.minute == 0) ? 59 : Time_Time.minute - 1;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_2, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_2, Time_MinuteStr);
             break;
 
         case 2:
             Time_Time.second = (Time_Time.second == 0) ? 59 : Time_Time.second - 1;
-            Time_updateGuiStr();
-            Menu_displayString(MENU__LINE_MESSAGE_3, "   ");
-            Menu_displayString(MENU__LINE_MESSAGE_3, Time_SecondStr);
+            break;
+    }
+
+    Time_updateEdit();
+}
+
+void Time_updateEdit(void)
+{
+    Time_updateGuiStr();
+    switch (Time_SetTimeMenu.item_index) {
+        case 0:
+            Lcd_displayString(Lcd_Line_line1, Time_HourStr, LCD__STYLE_NO_STYLE);
+            break;
+
+        case 1:
+            Lcd_displayString(Lcd_Line_line2, Time_MinuteStr, LCD__STYLE_NO_STYLE);
+            break;
+
+        case 2:
+            Lcd_displayString(Lcd_Line_line3, Time_SecondStr, LCD__STYLE_NO_STYLE);
             break;
     }
 }

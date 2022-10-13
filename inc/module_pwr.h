@@ -29,9 +29,9 @@
 #define PWR__DEVICE_6   (PWR__ADDR_PIN_1 | PWR__ADDR_PIN_2)
 #define PWR__DEVICE_7   (PWR__ADDR_PIN_0 | PWR__ADDR_PIN_1 | PWR__ADDR_PIN_2)
 
-extern Menu_Procedure *Pwr_StdUpProc;
-extern Menu_Procedure *Pwr_StdSelectProc;
-extern Menu_Procedure *Pwr_StdDownProc;
+extern Utility_Procedure *Pwr_StdUpProc;
+extern Utility_Procedure *Pwr_StdSelectProc;
+extern Utility_Procedure *Pwr_StdDownProc;
 
 // Init output register
 void Pwr_init(void);

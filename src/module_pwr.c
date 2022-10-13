@@ -3,6 +3,7 @@
 #include "module_pwrmng.h"
 
 #include "module_time.h"
+#include "module_utility.h"
 
 // Pwr
 
@@ -31,13 +32,13 @@ static void Pwr_stdUpProc(void);
 static void Pwr_stdSelectProc(void);
 static void Pwr_stdDownProc(void);
 
-static char Pwr_intToChar(int digit);
-
 // Variables
 
-static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_0}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_1}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_2}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_3}
+static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_0},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_1},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_2},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_3},
 
-                                                 ,
                                                  {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_4},
                                                  {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_5},
                                                  {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_6},
@@ -45,14 +46,14 @@ static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, 
 static size_t Pwr_DeviceIndex = 0;
 
 static uint8_t Pwr_DeviceStr[] = {'D', 'e', 'v', 'i', 'c', 'e', ' ', '0', '\0'};
-static size_t Pwr_DeviceStrLength = MENU__COUNT_OF(Pwr_DeviceStr);
+static size_t Pwr_DeviceStrLength = UTILITY__COUNT_OF(Pwr_DeviceStr);
 
 static uint8_t Pwr_StateStr[] = {'S', 't', 'a', 't', 'e', ' ', 'o', 'f', 'f', '\0'};
-static size_t Pwr_StateStrLength = MENU__COUNT_OF(Pwr_StateStr);
+static size_t Pwr_StateStrLength = UTILITY__COUNT_OF(Pwr_StateStr);
 
-Menu_Procedure *Pwr_StdUpProc = NULL;
-Menu_Procedure *Pwr_StdSelectProc = NULL;
-Menu_Procedure *Pwr_StdDownProc = NULL;
+Utility_Procedure *Pwr_StdUpProc = NULL;
+Utility_Procedure *Pwr_StdSelectProc = NULL;
+Utility_Procedure *Pwr_StdDownProc = NULL;
 
 // Pwr public functions
 
@@ -128,11 +129,6 @@ static void Pwr_stdDownProc(void)
     }
 }
 
-static char Pwr_intToChar(int digit)
-{
-	return '0' + digit;
-}
-
 // Pwrsts
 
 // Pwrsts private functions prototypes
@@ -156,35 +152,77 @@ static uint8_t Pwrsts_WorktimeStr[] = {'W', 'o', 'r', 'k', 'T', ':', ' ', '.', '
 // h: 7, 8
 // m: 10, 11
 // s: 13, 14
-// static size_t Pwrsts_WorktimeStrLength = MENU__COUNT_OF(Pwrsts_WorktimeStr);
+// static size_t Pwrsts_WorktimeStrLength = UTILITY__COUNT_OF(Pwrsts_WorktimeStr);
 
 static uint8_t Pwrsts_PreviousWorktimeStr[] = {'P', 'W', 'o', 'r', 'k', 'T', ':', ' ', '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0'};
 // h: 8, 9
 // m: 11, 12
 // s: 14, 15
-// static size_t Pwrsts_PreviousWorktimeStrLength = MENU__COUNT_OF(Pwrsts_PreviousWorktimeStr);
+// static size_t Pwrsts_PreviousWorktimeStrLength = UTILITY__COUNT_OF(Pwrsts_PreviousWorktimeStr);
 
 #define PWRSTS__RETURN_ITEM_INDEX 4
-static Menu_MenuItem Pwrsts_MainStatsMenuItems[] = {{Pwr_DeviceStr, NULL, NULL}, {Pwr_StateStr, NULL, NULL}, {Pwrsts_WorktimeStr, NULL, NULL}, {Pwrsts_PreviousWorktimeStr, NULL, NULL}, {"Up:update|Sel:return", NULL, NULL}};
-static Menu_Menu Pwrsts_MainStatsMenu = {"Power stats", Pwrsts_MainStatsMenuItems, MENU__COUNT_OF(Pwrsts_MainStatsMenuItems), 0, Pwrsts_updateProc, NULL, NULL, NULL};
+static Menu_MenuItem Pwrsts_MainStatsMenuItems[] = {{Pwr_DeviceStr, NULL, NULL},
+                                                    {Pwr_StateStr, NULL, NULL},
+                                                    {Pwrsts_WorktimeStr, NULL, NULL},
+                                                    {Pwrsts_PreviousWorktimeStr, NULL, NULL},
+                                                    {"Up:update|Sel:return", NULL, NULL}};
+static Menu_Menu Pwrsts_MainStatsMenu = {"Power stats",
+                                         Pwrsts_MainStatsMenuItems,
+                                         UTILITY__COUNT_OF(Pwrsts_MainStatsMenuItems),
+                                         0,
+                                         Pwrsts_updateProc,
+                                         NULL,
+                                         NULL,
+                                         NULL};
 
-static Menu_MenuItem Pwrsts_Stats14MenuItems[] = {{"Device 1", &Pwrsts_MainStatsMenu, Pwrsts_setDevice0Proc}, {"Device 2", &Pwrsts_MainStatsMenu, Pwrsts_setDevice1Proc}, {"Device 3", &Pwrsts_MainStatsMenu, Pwrsts_setDevice2Proc}, {"Device 4", &Pwrsts_MainStatsMenu, Pwrsts_setDevice3Proc}, {"Return", NULL, NULL}};
-static Menu_Menu Pwrsts_Stats14Menu = {"Stats Menu 1-4", Pwrsts_Stats14MenuItems, MENU__COUNT_OF(Pwrsts_Stats14MenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrsts_Stats14MenuItems[] = {{"Device 1", &Pwrsts_MainStatsMenu, Pwrsts_setDevice0Proc},
+                                                  {"Device 2", &Pwrsts_MainStatsMenu, Pwrsts_setDevice1Proc},
+                                                  {"Device 3", &Pwrsts_MainStatsMenu, Pwrsts_setDevice2Proc},
+                                                  {"Device 4", &Pwrsts_MainStatsMenu, Pwrsts_setDevice3Proc},
+                                                  {"Return", NULL, NULL}};
+static Menu_Menu Pwrsts_Stats14Menu = {"Stats Menu 1-4",
+                                       Pwrsts_Stats14MenuItems,
+                                       UTILITY__COUNT_OF(Pwrsts_Stats14MenuItems),
+                                       0,
+                                       Pwr_stdUpProc,
+                                       Pwr_stdSelectProc,
+                                       Pwr_stdDownProc,
+                                       NULL};
 
-static Menu_MenuItem Pwrsts_Stats58MenuItems[] = {{"Device 5", &Pwrsts_MainStatsMenu, Pwrsts_setDevice4Proc}, {"Device 6", &Pwrsts_MainStatsMenu, Pwrsts_setDevice5Proc}, {"Device 7", &Pwrsts_MainStatsMenu, Pwrsts_setDevice6Proc}, {"Device 8", &Pwrsts_MainStatsMenu, Pwrsts_setDevice7Proc}, {"Return", NULL, NULL}};
-static Menu_Menu Pwrsts_Stats58Menu = {"Stats Menu 5-8", Pwrsts_Stats58MenuItems, MENU__COUNT_OF(Pwrsts_Stats58MenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrsts_Stats58MenuItems[] = {{"Device 5", &Pwrsts_MainStatsMenu, Pwrsts_setDevice4Proc},
+                                                  {"Device 6", &Pwrsts_MainStatsMenu, Pwrsts_setDevice5Proc},
+                                                  {"Device 7", &Pwrsts_MainStatsMenu, Pwrsts_setDevice6Proc},
+                                                  {"Device 8", &Pwrsts_MainStatsMenu, Pwrsts_setDevice7Proc},
+                                                  {"Return", NULL, NULL}};
+static Menu_Menu Pwrsts_Stats58Menu = {"Stats Menu 5-8",
+                                       Pwrsts_Stats58MenuItems,
+                                       UTILITY__COUNT_OF(Pwrsts_Stats58MenuItems),
+                                       0,
+                                       Pwr_stdUpProc,
+                                       Pwr_stdSelectProc,
+                                       Pwr_stdDownProc,
+                                       NULL};
 
-static Menu_MenuItem Pwrsts_StatsMenuItems[] = {{"Devices 1-4", &Pwrsts_Stats14Menu, NULL}, {"Devices 5-8", &Pwrsts_Stats58Menu, NULL}, {"Return", NULL, NULL}};
-Menu_Menu Pwrsts_StatsMenu = {"Stats Menu", Pwrsts_StatsMenuItems, MENU__COUNT_OF(Pwrsts_StatsMenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrsts_StatsMenuItems[] = {{"Devices 1-4", &Pwrsts_Stats14Menu, NULL},
+                                                {"Devices 5-8", &Pwrsts_Stats58Menu, NULL},
+                                                {"Return", NULL, NULL}};
+Menu_Menu Pwrsts_StatsMenu = {"Stats Menu",
+                              Pwrsts_StatsMenuItems,
+                              UTILITY__COUNT_OF(Pwrsts_StatsMenuItems),
+                              0,
+                              Pwr_stdUpProc,
+                              Pwr_stdSelectProc,
+                              Pwr_stdDownProc,
+                              NULL};
 
 // Pwrsts public functions
 
-void Pwrsts_init(Menu_Procedure *return_proc)
+void Pwrsts_init(Utility_Procedure *return_proc)
 {
     Pwrsts_MainStatsMenu.select = return_proc;
     Pwrsts_Stats14MenuItems[PWRSTS__RETURN_ITEM_INDEX].proc = return_proc;
     Pwrsts_Stats58MenuItems[PWRSTS__RETURN_ITEM_INDEX].proc = return_proc;
-    Pwrsts_StatsMenuItems[MENU__COUNT_OF(Pwrsts_StatsMenuItems) - 1].proc = return_proc;
+    Pwrsts_StatsMenuItems[UTILITY__COUNT_OF(Pwrsts_StatsMenuItems) - 1].proc = return_proc;
 }
 
 uint8_t *Pwrsts_getStats(void)
@@ -245,39 +283,38 @@ uint8_t *Pwrsts_getStats(void)
                               'p', '0', '0', ':', '0', '0', ':', '0', '0',
                               '\r', '\n',
                               '\0'};
-	unsigned int i, base_i;
-	Time_TimeEdit edit;
-	Pwr_Device * device;
+    unsigned int i, base_i;
+    Time_TimeEdit edit;
+    Pwr_Device *device;
 
-	for (i = 0; i < PWR__N_DEVICES; ++i)
-	{
-		base_i = i * 28;
-		device = Pwr_Devices + i;
-		
-		stats[base_i + 3] = (device->state) ? 'f' : 'n';
+    for (i = 0; i < PWR__N_DEVICES; ++i) {
+        base_i = i * 28;
+        device = Pwr_Devices + i;
 
-		edit = Time_timeEdit(device->worktime);
+        stats[base_i + 3] = (device->state) ? 'f' : 'n';
 
-		stats[base_i + 7] = Pwr_intToChar(edit.hour / 10);
-		stats[base_i + 8] = Pwr_intToChar(edit.hour % 10);
+        edit = Time_timeEdit(device->worktime);
 
-		stats[base_i + 10] = Pwr_intToChar(edit.minute / 10);
-		stats[base_i + 11] = Pwr_intToChar(edit.minute % 10);
+        stats[base_i + 7] = Utility_intToChar(edit.hour / 10);
+        stats[base_i + 8] = Utility_intToChar(edit.hour % 10);
 
-		stats[base_i + 13] = Pwr_intToChar(edit.second / 10);
-		stats[base_i + 14] = Pwr_intToChar(edit.second % 10);
-		
-		edit = Time_timeEdit(device->previous_worktime);
+        stats[base_i + 10] = Utility_intToChar(edit.minute / 10);
+        stats[base_i + 11] = Utility_intToChar(edit.minute % 10);
 
-		stats[base_i + 18] = Pwr_intToChar(edit.hour / 10);
-		stats[base_i + 19] = Pwr_intToChar(edit.hour % 10);
+        stats[base_i + 13] = Utility_intToChar(edit.second / 10);
+        stats[base_i + 14] = Utility_intToChar(edit.second % 10);
 
-		stats[base_i + 21] = Pwr_intToChar(edit.minute / 10);
-		stats[base_i + 22] = Pwr_intToChar(edit.minute % 10);
+        edit = Time_timeEdit(device->previous_worktime);
 
-		stats[base_i + 24] = Pwr_intToChar(edit.second / 10);
-		stats[base_i + 25] = Pwr_intToChar(edit.second % 10);
-	}
+        stats[base_i + 18] = Utility_intToChar(edit.hour / 10);
+        stats[base_i + 19] = Utility_intToChar(edit.hour % 10);
+
+        stats[base_i + 21] = Utility_intToChar(edit.minute / 10);
+        stats[base_i + 22] = Utility_intToChar(edit.minute % 10);
+
+        stats[base_i + 24] = Utility_intToChar(edit.second / 10);
+        stats[base_i + 25] = Utility_intToChar(edit.second % 10);
+    }
 
     return stats;
 }
@@ -363,37 +400,37 @@ void Pwrsts_updateGuiStr(void)
     unsigned int worktime = Pwr_Devices[Pwr_DeviceIndex].worktime;
     unsigned int previous_worktime = Pwr_Devices[Pwr_DeviceIndex].previous_worktime;
 
-	Time_TimeEdit edit;
-	
+    Time_TimeEdit edit;
+
     Pwr_updateGuiStr();
 
-	edit = Time_timeEdit(worktime);
+    edit = Time_timeEdit(worktime);
 
     // hours
-    Pwrsts_WorktimeStr[13] = Pwr_intToChar(edit.hour / 10);
-    Pwrsts_WorktimeStr[14] = Pwr_intToChar(edit.hour % 10);
+    Pwrsts_WorktimeStr[7] = Utility_intToChar(edit.hour / 10);
+    Pwrsts_WorktimeStr[8] = Utility_intToChar(edit.hour % 10);
 
     // minutes
-    Pwrsts_WorktimeStr[10] = Pwr_intToChar(edit.minute / 10);
-    Pwrsts_WorktimeStr[11] = Pwr_intToChar(edit.minute % 10);
+    Pwrsts_WorktimeStr[10] = Utility_intToChar(edit.minute / 10);
+    Pwrsts_WorktimeStr[11] = Utility_intToChar(edit.minute % 10);
 
     // seconds
-    Pwrsts_WorktimeStr[7] = Pwr_intToChar(edit.second / 10);
-    Pwrsts_WorktimeStr[8] = Pwr_intToChar(edit.second % 10);
+    Pwrsts_WorktimeStr[13] = Utility_intToChar(edit.second / 10);
+    Pwrsts_WorktimeStr[14] = Utility_intToChar(edit.second % 10);
 
-	edit = Time_timeEdit(previous_worktime);
+    edit = Time_timeEdit(previous_worktime);
 
     // hours
-    Pwrsts_PreviousWorktimeStr[14] = Pwr_intToChar(edit.hour / 10);
-    Pwrsts_PreviousWorktimeStr[15] = Pwr_intToChar(edit.hour % 10);
+    Pwrsts_PreviousWorktimeStr[8] = Utility_intToChar(edit.hour / 10);
+    Pwrsts_PreviousWorktimeStr[9] = Utility_intToChar(edit.hour % 10);
 
     // minutes
-    Pwrsts_PreviousWorktimeStr[11] = Pwr_intToChar(edit.minute / 10);
-    Pwrsts_PreviousWorktimeStr[12] = Pwr_intToChar(edit.minute % 10);
+    Pwrsts_PreviousWorktimeStr[11] = Utility_intToChar(edit.minute / 10);
+    Pwrsts_PreviousWorktimeStr[12] = Utility_intToChar(edit.minute % 10);
 
     // seconds
-    Pwrsts_PreviousWorktimeStr[8] = Pwr_intToChar(edit.second / 10);
-    Pwrsts_PreviousWorktimeStr[9] = Pwr_intToChar(edit.second % 10);
+    Pwrsts_PreviousWorktimeStr[14] = Utility_intToChar(edit.second / 10);
+    Pwrsts_PreviousWorktimeStr[15] = Utility_intToChar(edit.second % 10);
 }
 
 void Pwrsts_updateProc(void)
@@ -429,28 +466,70 @@ static void Pwrmng_downProc(void);
 // Pwrmng private variables
 
 #define PWRMNG__RETURN_ITEM_INDEX 4
-static Menu_MenuItem Pwrmng_MainPowerMenuItems[] = {{Pwr_DeviceStr, NULL, NULL}, {Pwr_StateStr, NULL, NULL}, {"Turn on", NULL, Pwrmng_turnOnProc}, {"Turn off", NULL, Pwrmng_turnOffProc}, {"Return", NULL, NULL}};
+static Menu_MenuItem Pwrmng_MainPowerMenuItems[] = {{Pwr_DeviceStr, NULL, NULL},
+                                                    {Pwr_StateStr, NULL, NULL},
+                                                    {"Turn on", NULL, Pwrmng_turnOnProc},
+                                                    {"Turn off", NULL, Pwrmng_turnOffProc},
+                                                    {"Return", NULL, NULL}};
 
-static Menu_Menu Pwrmng_MainPowerMenu = {"Power stats", Pwrmng_MainPowerMenuItems, MENU__COUNT_OF(Pwrmng_MainPowerMenuItems), 0, Pwrmng_upProc, Pwrmng_selectProc, Pwrmng_downProc, NULL};
-static Pwrmng_Procedure *Pwrmng_Update = NULL;
+static Menu_Menu Pwrmng_MainPowerMenu = {"Power stats",
+                                         Pwrmng_MainPowerMenuItems,
+                                         UTILITY__COUNT_OF(Pwrmng_MainPowerMenuItems),
+                                         0,
+                                         Pwrmng_upProc,
+                                         Pwrmng_selectProc,
+                                         Pwrmng_downProc,
+                                         NULL};
+static Utility_Procedure *Pwrmng_Update = NULL;
 
-static Menu_MenuItem Pwrmng_Power14MenuItems[] = {{"Device 1", &Pwrmng_MainPowerMenu, Pwrmng_setDevice0Proc}, {"Device 2", &Pwrmng_MainPowerMenu, Pwrmng_setDevice1Proc}, {"Device 3", &Pwrmng_MainPowerMenu, Pwrmng_setDevice2Proc}, {"Device 4", &Pwrmng_MainPowerMenu, Pwrmng_setDevice3Proc}, {"Return", NULL, NULL}};
-static Menu_Menu Pwrmng_Power14Menu = {"Power Menu 1-4", Pwrmng_Power14MenuItems, MENU__COUNT_OF(Pwrmng_Power14MenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrmng_Power14MenuItems[] = {{"Device 1", &Pwrmng_MainPowerMenu, Pwrmng_setDevice0Proc},
+                                                  {"Device 2", &Pwrmng_MainPowerMenu, Pwrmng_setDevice1Proc},
+                                                  {"Device 3", &Pwrmng_MainPowerMenu, Pwrmng_setDevice2Proc},
+                                                  {"Device 4", &Pwrmng_MainPowerMenu, Pwrmng_setDevice3Proc},
+                                                  {"Return", NULL, NULL}};
+static Menu_Menu Pwrmng_Power14Menu = {"Power Menu 1-4",
+                                       Pwrmng_Power14MenuItems,
+                                       UTILITY__COUNT_OF(Pwrmng_Power14MenuItems),
+                                       0,
+                                       Pwr_stdUpProc,
+                                       Pwr_stdSelectProc,
+                                       Pwr_stdDownProc,
+                                       NULL};
 
-static Menu_MenuItem Pwrmng_Power58MenuItems[] = {{"Device 5", &Pwrmng_MainPowerMenu, Pwrmng_setDevice4Proc}, {"Device 6", &Pwrmng_MainPowerMenu, Pwrmng_setDevice5Proc}, {"Device 7", &Pwrmng_MainPowerMenu, Pwrmng_setDevice6Proc}, {"Device 8", &Pwrmng_MainPowerMenu, Pwrmng_setDevice7Proc}, {"Return", NULL, NULL}};
-static Menu_Menu Pwrmng_Power58Menu = {"Power Menu 5-8", Pwrmng_Power58MenuItems, MENU__COUNT_OF(Pwrmng_Power58MenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrmng_Power58MenuItems[] = {{"Device 5", &Pwrmng_MainPowerMenu, Pwrmng_setDevice4Proc},
+                                                  {"Device 6", &Pwrmng_MainPowerMenu, Pwrmng_setDevice5Proc},
+                                                  {"Device 7", &Pwrmng_MainPowerMenu, Pwrmng_setDevice6Proc},
+                                                  {"Device 8", &Pwrmng_MainPowerMenu, Pwrmng_setDevice7Proc},
+                                                  {"Return", NULL, NULL}};
+static Menu_Menu Pwrmng_Power58Menu = {"Power Menu 5-8",
+                                       Pwrmng_Power58MenuItems,
+                                       UTILITY__COUNT_OF(Pwrmng_Power58MenuItems),
+                                       0,
+                                       Pwr_stdUpProc,
+                                       Pwr_stdSelectProc,
+                                       Pwr_stdDownProc,
+                                       NULL};
 
-static Menu_MenuItem Pwrmng_PowerMenuItems[] = {{"Devices 1-4", &Pwrmng_Power14Menu, NULL}, {"Devices 5-8", &Pwrmng_Power58Menu, NULL}, {"Return", NULL, NULL}};
-Menu_Menu Pwrmng_PowerMenu = {"Power Menu", Pwrmng_PowerMenuItems, MENU__COUNT_OF(Pwrmng_PowerMenuItems), 0, Pwr_stdUpProc, Pwr_stdSelectProc, Pwr_stdDownProc, NULL};
+static Menu_MenuItem Pwrmng_PowerMenuItems[] = {{"Devices 1-4", &Pwrmng_Power14Menu, NULL},
+                                                {"Devices 5-8", &Pwrmng_Power58Menu, NULL},
+                                                {"Return", NULL, NULL}};
+Menu_Menu Pwrmng_PowerMenu = {"Power Menu",
+                              Pwrmng_PowerMenuItems,
+                              UTILITY__COUNT_OF(Pwrmng_PowerMenuItems),
+                              0,
+                              Pwr_stdUpProc,
+                              Pwr_stdSelectProc,
+                              Pwr_stdDownProc,
+                              NULL};
 
 // Pwrmng public functions
 
-void Pwrmng_init(Menu_Procedure *return_proc, Pwrmng_Procedure *update)
+void Pwrmng_init(Utility_Procedure *return_proc, Utility_Procedure *update)
 {
     Pwrmng_MainPowerMenuItems[PWRMNG__RETURN_ITEM_INDEX].proc = return_proc;
     Pwrmng_Power14MenuItems[PWRMNG__RETURN_ITEM_INDEX].proc = return_proc;
     Pwrmng_Power58MenuItems[PWRMNG__RETURN_ITEM_INDEX].proc = return_proc;
-    Pwrmng_PowerMenuItems[MENU__COUNT_OF(Pwrmng_PowerMenuItems) - 1].proc = return_proc;
+    Pwrmng_PowerMenuItems[UTILITY__COUNT_OF(Pwrmng_PowerMenuItems) - 1].proc = return_proc;
     Pwrmng_Update = update;
 }
 
@@ -550,7 +629,8 @@ void Pwrmng_turnOnProc(void)
     Pwrmng_turnDeviceOn();
 
     Pwr_updateGuiStr();
-    Menu_displayMenuItemString(MENU__LINE_MESSAGE_2, Pwr_StateStr);
+
+    Lcd_displayString(Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_NO_STYLE);
 }
 
 void Pwrmng_turnOffProc(void)
@@ -558,7 +638,7 @@ void Pwrmng_turnOffProc(void)
     Pwrmng_turnDeviceOff();
 
     Pwr_updateGuiStr();
-    Menu_displayMenuItemString(MENU__LINE_MESSAGE_2, Pwr_StateStr);
+    Lcd_displayString(Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_NO_STYLE);
 }
 
 void Pwrmng_upProc(void)
@@ -569,7 +649,7 @@ void Pwrmng_upProc(void)
 void Pwrmng_selectProc(void)
 {
     size_t index = Pwrmng_MainPowerMenu.item_index;
-    Menu_Procedure *proc = Pwrmng_MainPowerMenu.items[index].proc;
+    Utility_Procedure *proc = Pwrmng_MainPowerMenu.items[index].proc;
     if (proc != NULL) {
         proc();
     }

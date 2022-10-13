@@ -61,9 +61,19 @@ static size_t App_MenuLevel;
 static volatile bool App_UpdateGuiSoon = FALSE;
 
 /* Main menu */
-static Menu_MenuItem App_MainMenuItems[] = {{"Stats", &Pwrsts_StatsMenu, NULL}, {"Manage", &Pwrmng_PowerMenu, NULL}, {"SetTime", &Time_SetTimeMenu, NULL}, {"Force Send", NULL, App_sendStatsProc}};
+static Menu_MenuItem App_MainMenuItems[] = {{"Stats", &Pwrsts_StatsMenu, NULL},
+                                            {"Manage", &Pwrmng_PowerMenu, NULL},
+                                            {"SetTime", &Time_SetTimeMenu, NULL},
+                                            {"Force Send", NULL, App_sendStatsProc}};
 
-static Menu_Menu MainMenu = {"Main menu", App_MainMenuItems, MENU__COUNT_OF(App_MainMenuItems), 0, App_upProc, App_selectProc, App_downProc, NULL};
+static Menu_Menu MainMenu = {"Main menu",
+                             App_MainMenuItems,
+                             UTILITY__COUNT_OF(App_MainMenuItems),
+                             0,
+                             App_upProc,
+                             App_selectProc,
+                             App_downProc,
+                             NULL};
 
 static int App_SendStatsCounter = 1;
 
@@ -86,7 +96,6 @@ void App_init(void)
     App_CurrentMenu = &MainMenu;
     App_MenuLevel = 0;
     App_PreviousMenus[App_MenuLevel] = App_CurrentMenu;
-    CurrentFont = &Font_6x8;
 
     if (App_isValidCurrentMenu()) Menu_displayMenu(App_CurrentMenu);
 }

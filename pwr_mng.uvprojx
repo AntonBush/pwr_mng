@@ -638,6 +638,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>module_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>module_utility.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_utility.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -727,6 +737,16 @@
               <FileName>module_uart.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_utility.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_utility.h</FilePath>
             </File>
           </Files>
         </Group>
