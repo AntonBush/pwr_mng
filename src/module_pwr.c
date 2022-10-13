@@ -31,6 +31,8 @@ static void Pwr_stdUpProc(void);
 static void Pwr_stdSelectProc(void);
 static void Pwr_stdDownProc(void);
 
+static char Pwr_intToChar(int digit);
+
 // Variables
 
 static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_0}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_1}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_2}, {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_3}
@@ -124,6 +126,11 @@ static void Pwr_stdDownProc(void)
     if (Pwr_StdDownProc != NULL) {
         Pwr_StdDownProc();
     }
+}
+
+static char Pwr_intToChar(int digit)
+{
+	return '0' + digit;
 }
 
 // Pwrsts
@@ -238,8 +245,39 @@ uint8_t *Pwrsts_getStats(void)
                               'p', '0', '0', ':', '0', '0', ':', '0', '0',
                               '\r', '\n',
                               '\0'};
+	unsigned int i, base_i;
+	Time_TimeEdit edit;
+	Pwr_Device * device;
 
-    // update string
+	for (i = 0; i < PWR__N_DEVICES; ++i)
+	{
+		base_i = i * 28;
+		device = Pwr_Devices + i;
+		
+		stats[base_i + 3] = (device->state) ? 'f' : 'n';
+
+		edit = Time_timeEdit(device->worktime);
+
+		stats[base_i + 7] = Pwr_intToChar(edit.hour / 10);
+		stats[base_i + 8] = Pwr_intToChar(edit.hour % 10);
+
+		stats[base_i + 10] = Pwr_intToChar(edit.minute / 10);
+		stats[base_i + 11] = Pwr_intToChar(edit.minute % 10);
+
+		stats[base_i + 13] = Pwr_intToChar(edit.second / 10);
+		stats[base_i + 14] = Pwr_intToChar(edit.second % 10);
+		
+		edit = Time_timeEdit(device->previous_worktime);
+
+		stats[base_i + 18] = Pwr_intToChar(edit.hour / 10);
+		stats[base_i + 19] = Pwr_intToChar(edit.hour % 10);
+
+		stats[base_i + 21] = Pwr_intToChar(edit.minute / 10);
+		stats[base_i + 22] = Pwr_intToChar(edit.minute % 10);
+
+		stats[base_i + 24] = Pwr_intToChar(edit.second / 10);
+		stats[base_i + 25] = Pwr_intToChar(edit.second % 10);
+	}
 
     return stats;
 }
@@ -325,49 +363,37 @@ void Pwrsts_updateGuiStr(void)
     unsigned int worktime = Pwr_Devices[Pwr_DeviceIndex].worktime;
     unsigned int previous_worktime = Pwr_Devices[Pwr_DeviceIndex].previous_worktime;
 
-    unsigned int worktime_hours;
-    unsigned int worktime_minutes;
-    unsigned int worktime_seconds;
-
-    unsigned int previous_worktime_hours;
-    unsigned int previous_worktime_minutes;
-    unsigned int previous_worktime_seconds;
-
+	Time_TimeEdit edit;
+	
     Pwr_updateGuiStr();
 
-    worktime_hours = worktime / (60 * 60);
-    worktime %= 60 * 60;
-    worktime_minutes = worktime / 60;
-    worktime_seconds = worktime % 60;
-
-    previous_worktime_hours = worktime / (60 * 60);
-    previous_worktime %= 60 * 60;
-    previous_worktime_minutes = worktime / 60;
-    previous_worktime_seconds = worktime % 60;
+	edit = Time_timeEdit(worktime);
 
     // hours
-    Pwrsts_WorktimeStr[13] = '0' + (worktime_hours / 10 % 10);
-    Pwrsts_WorktimeStr[14] = '0' + (worktime_hours % 10);
+    Pwrsts_WorktimeStr[13] = Pwr_intToChar(edit.hour / 10);
+    Pwrsts_WorktimeStr[14] = Pwr_intToChar(edit.hour % 10);
 
     // minutes
-    Pwrsts_WorktimeStr[10] = '0' + (worktime_minutes / 10 % 10);
-    Pwrsts_WorktimeStr[11] = '0' + (worktime_minutes % 10);
+    Pwrsts_WorktimeStr[10] = Pwr_intToChar(edit.minute / 10);
+    Pwrsts_WorktimeStr[11] = Pwr_intToChar(edit.minute % 10);
 
     // seconds
-    Pwrsts_WorktimeStr[7] = '0' + (worktime_seconds / 10 % 10);
-    Pwrsts_WorktimeStr[8] = '0' + (worktime_seconds % 10);
+    Pwrsts_WorktimeStr[7] = Pwr_intToChar(edit.second / 10);
+    Pwrsts_WorktimeStr[8] = Pwr_intToChar(edit.second % 10);
+
+	edit = Time_timeEdit(previous_worktime);
 
     // hours
-    Pwrsts_PreviousWorktimeStr[14] = '0' + (previous_worktime_hours / 10 % 10);
-    Pwrsts_PreviousWorktimeStr[15] = '0' + (previous_worktime_hours % 10);
+    Pwrsts_PreviousWorktimeStr[14] = Pwr_intToChar(edit.hour / 10);
+    Pwrsts_PreviousWorktimeStr[15] = Pwr_intToChar(edit.hour % 10);
 
     // minutes
-    Pwrsts_PreviousWorktimeStr[11] = '0' + (previous_worktime_minutes / 10 % 10);
-    Pwrsts_PreviousWorktimeStr[12] = '0' + (previous_worktime_minutes % 10);
+    Pwrsts_PreviousWorktimeStr[11] = Pwr_intToChar(edit.minute / 10);
+    Pwrsts_PreviousWorktimeStr[12] = Pwr_intToChar(edit.minute % 10);
 
     // seconds
-    Pwrsts_PreviousWorktimeStr[8] = '0' + (previous_worktime_seconds / 10 % 10);
-    Pwrsts_PreviousWorktimeStr[9] = '0' + (previous_worktime_seconds % 10);
+    Pwrsts_PreviousWorktimeStr[8] = Pwr_intToChar(edit.second / 10);
+    Pwrsts_PreviousWorktimeStr[9] = Pwr_intToChar(edit.second % 10);
 }
 
 void Pwrsts_updateProc(void)

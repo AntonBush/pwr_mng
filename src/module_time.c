@@ -50,6 +50,17 @@ static Time_ProcedureUint32 *Time_TimeSetCallback = NULL;
 
 // Public functions
 
+Time_TimeEdit Time_timeEdit(uint32_t raw_time)
+{
+    Time_TimeEdit time;
+
+    time.hour = raw_time / 3600;
+    time.minute = raw_time / 60 % 60;
+    time.second = raw_time % 60;
+
+    return time;
+}
+
 void Time_init(Menu_Procedure *return_proc, Time_ProcedureUint32 *time_set_callback)
 {
     unsigned int i;
@@ -81,15 +92,7 @@ uint32_t Time_getRawTime(void)
 
 Time_TimeEdit Time_getTime(void)
 {
-    uint32_t tmp;
-    Time_TimeEdit time;
-
-    tmp = Time_getRawTime();
-    time.hour = tmp / 3600;
-    time.minute = tmp / 60 % 60;
-    time.second = tmp % 60;
-
-    return time;
+    return Time_timeEdit(Time_getRawTime());
 }
 
 void Time_setRawTime(uint32_t time)

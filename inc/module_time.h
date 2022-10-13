@@ -14,6 +14,8 @@ typedef void(Time_ProcedureUint32)(uint32_t);
 
 extern Menu_Menu Time_SetTimeMenu;
 
+Time_TimeEdit Time_timeEdit(uint32_t raw_time);
+
 void Time_init(Menu_Procedure *return_proc, Time_ProcedureUint32 *time_set_callback);
 
 uint32_t Time_getRawTime(void);
