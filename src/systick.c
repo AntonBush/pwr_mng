@@ -60,7 +60,7 @@ void SysTick_Handler(void)
   {
     TimerCounter--;
   }
-  disk_timerproc();	/* Disk timer process */
+  // disk_timerproc();	/* Disk timer process */
 }
 
 /*******************************************************************************

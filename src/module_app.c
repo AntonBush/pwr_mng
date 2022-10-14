@@ -3,8 +3,6 @@
 #include "module_demo.h"
 #include "module_menu.h"
 #include "module_pwr.h"
-#include "module_pwrmng.h"
-#include "module_pwrsts.h"
 #include "module_time.h"
 #include "module_interrupt.h"
 #include "module_uart.h"
@@ -61,8 +59,7 @@ static size_t App_MenuLevel;
 static volatile bool App_UpdateGuiSoon = FALSE;
 
 /* Main menu */
-static Menu_MenuItem App_MainMenuItems[] = {{"Stats", &Pwrsts_StatsMenu, NULL},
-                                            {"Manage", &Pwrmng_PowerMenu, NULL},
+static Menu_MenuItem App_MainMenuItems[] = {{"Devices", &Pwr_DeviceMenu, NULL},
                                             {"SetTime", &Time_SetTimeMenu, NULL},
                                             {"Force Send", NULL, App_sendStatsProc}};
 
@@ -84,12 +81,10 @@ void App_init(void)
     Demo_init();
     Time_init(App_returnProc, App_resetStats);
 
-    Pwr_init();
     Pwr_StdUpProc = App_upProc;
     Pwr_StdSelectProc = App_selectProc;
     Pwr_StdDownProc = App_downProc;
-    Pwrmng_init(App_returnProc, App_updateStats);
-    Pwrsts_init(App_returnProc);
+    Pwr_init(App_returnProc, App_updateStats);
 
     Uart_init();
 
@@ -228,7 +223,7 @@ void App_returnProc(void)
 
 void App_sendStatsProc(void)
 {
-    Uart_putString(Pwrsts_getStats());
+    Uart_putString(Pwr_getStats());
     Uart_sendBytes();
 }
 
@@ -247,7 +242,7 @@ bool App_isValidCurrentMenu(void)
 
 void App_sendStats(void)
 {
-    if (Uart_putWholeString(Pwrsts_getStats())) {
+    if (Uart_putWholeString(Pwr_getStats())) {
         if (App_SendStatsCounter < 0) {
             App_SendStatsCounter = -App_SendStatsCounter + 1;
         } else {
@@ -281,14 +276,14 @@ void App_updateStats(void)
 
     if ((App_SendStatsCounter == 1) || (App_SendStatsCounter == 2 && APP__TWELVE_HOURS <= time)) {
         App_sendStats();
-        Pwrsts_checkPoint(time);
+        Pwr_checkPoint(time);
     } else {
-        Pwrsts_updateStats(time);
+        Pwr_updateStats(time);
     }
 }
 
 void App_resetStats(uint32_t old_time)
 {
-    Pwrsts_updateStats(old_time);
-    Pwrsts_resetStats(Time_getRawTime());
+    Pwr_updateStats(old_time);
+    Pwr_resetStats(Time_getRawTime());
 }

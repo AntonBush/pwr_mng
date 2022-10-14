@@ -33,10 +33,21 @@ extern Utility_Procedure *Pwr_StdUpProc;
 extern Utility_Procedure *Pwr_StdSelectProc;
 extern Utility_Procedure *Pwr_StdDownProc;
 
+extern Menu_Menu Pwr_DeviceMenu;
+
 // Init output register
-void Pwr_init(void);
+void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update);
 
 int Pwr_currentDevice(void);
 void Pwr_setCurrentDevice(int device);
+
+void Pwrmng_turnDeviceOn(void);
+void Pwrmng_turnDeviceOff(void);
+
+uint8_t *Pwr_getStats(void);
+
+void Pwr_checkPoint(uint32_t time);
+void Pwr_updateStats(uint32_t time);
+void Pwr_resetStats(uint32_t time);
 
 #endif // MODULE_PWR

@@ -476,41 +476,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>MDR32F9Qx_USBLib</GroupName>
-          <Files>
-            <File>
-              <FileName>MDR32F9Qx_usb_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\USB_Library\MDR32F9Qx_usb_device.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_usb_CDC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\USB_Library\MDR32F9Qx_usb_CDC.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>MDR32F9Qx_FatFsLib</GroupName>
-          <Files>
-            <File>
-              <FileName>rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src_fatfs\rtc.c</FilePath>
-            </File>
-            <File>
-              <FileName>ff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src_fatfs\ff.c</FilePath>
-            </File>
-            <File>
-              <FileName>mmc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src_fatfs\mmc.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>target</GroupName>
           <Files>
             <File>
@@ -534,74 +499,9 @@
           <GroupName>user</GroupName>
           <Files>
             <File>
-              <FileName>Demo_Init_MDR32F9Q1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Demo_Init_MDR32F9Q1.c</FilePath>
-            </File>
-            <File>
-              <FileName>Demo_Init_MDR32F9Qx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Demo_Init_MDR32F9Qx.c</FilePath>
-            </File>
-            <File>
               <FileName>Main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\Main.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\MDR32F9Qx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_gl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_gl.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_leds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_leds.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_lowpower.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_lowpower.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_text.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_text.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_time.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_time.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_tsensor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_tsensor.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_uSDFlash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_uSDFlash.c</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_VCOM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\Menu_VCOM.c</FilePath>
             </File>
             <File>
               <FileName>module_app.c</FileName>
@@ -653,46 +553,6 @@
         <Group>
           <GroupName>inc</GroupName>
           <Files>
-            <File>
-              <FileName>Demo_Init.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\Demo_Init.h</FilePath>
-            </File>
-            <File>
-              <FileName>LowPower.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\LowPower.h</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_it.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\MDR32F9Qx_it.h</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_usb_handlers.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\MDR32F9Qx_usb_handlers.h</FilePath>
-            </File>
-            <File>
-              <FileName>Menu.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\Menu.h</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_items.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\Menu_items.h</FilePath>
-            </File>
-            <File>
-              <FileName>Menu_uSDFlash.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\Menu_uSDFlash.h</FilePath>
-            </File>
-            <File>
-              <FileName>time.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\time.h</FilePath>
-            </File>
             <File>
               <FileName>module_app.h</FileName>
               <FileType>5</FileType>
