@@ -161,6 +161,21 @@ void App_down(void)
 
 void App_update(void)
 {
+    /********************** Uart echo ***********************/
+    Uart_MaybeReceivedChar maybe;
+
+    Uart_receiveData();
+    maybe = Uart_getChar();
+
+    while (maybe.received) {
+        if (maybe.received_data.error == UART__RECIEVE_ERROR_NO_ERROR &&
+            !Uart_putChar(maybe.received_data.ch)) {
+            break;
+        }
+        maybe = Uart_getChar();
+    }
+
+    /********************** Update gui ***********************/
     if (App_UpdateGuiSoon) {
         App_updateStats();
 
@@ -224,7 +239,7 @@ void App_returnProc(void)
 void App_sendStatsProc(void)
 {
     Uart_putString(Pwr_getStats());
-    Uart_sendBytes();
+    Uart_sendData();
 }
 
 bool App_isValidCurrentMenu(void)
@@ -248,7 +263,7 @@ void App_sendStats(void)
         } else {
             ++App_SendStatsCounter;
         }
-        Uart_sendBytes();
+        Uart_sendData();
     } else if (0 < App_SendStatsCounter) {
         App_SendStatsCounter = -App_SendStatsCounter;
     }

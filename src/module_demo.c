@@ -140,7 +140,7 @@ void Demo_init(void)
     /////////////////////////////////////////////// END //////////////////////////////////////////////////////////
 
     /************************ PWR Initialization *************************/
-
+    PORT_StructInit(&PortInitStructure);
     PortInitStructure.PORT_FUNC = PORT_FUNC_PORT;
     PortInitStructure.PORT_OE = PORT_OE_OUT;
     PortInitStructure.PORT_SPEED = PORT_SPEED_FAST;
@@ -168,6 +168,23 @@ void Demo_init(void)
     PortInitStructure.PORT_MODE = PORT_MODE_ANALOG;
 
     PORT_Init(MDR_PORTE, &PortInitStructure);
+
+    /************************* Uart1 Initialization *************************/
+    /* Enable the RTCHSE clock on UART1 */
+    RST_CLK_PCLKcmd(RST_CLK_PCLK_UART1, ENABLE);
+
+    PORT_StructInit(&PortInitStructure);
+    PortInitStructure.PORT_SPEED = PORT_SPEED_MAXFAST;
+    PortInitStructure.PORT_MODE = PORT_MODE_DIGITAL;
+    PortInitStructure.PORT_FUNC = PORT_FUNC_OVERRID;
+
+    PortInitStructure.PORT_Pin = PORT_Pin_6;
+    PortInitStructure.PORT_OE = PORT_OE_IN;
+    PORT_Init(MDR_PORTA, &PortInitStructure);
+
+    PortInitStructure.PORT_Pin = PORT_Pin_7;
+    PortInitStructure.PORT_OE = PORT_OE_OUT;
+    PORT_Init(MDR_PORTA, &PortInitStructure);
 
     /************************ *************************/
     Demo_configureRtc();

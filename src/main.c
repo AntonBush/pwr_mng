@@ -48,8 +48,8 @@ int main(void)
 void main(void)
 #endif
 {
-    Interrupt_UartReceiveHandler = Uart_recieveBytes;
-    Interrupt_UartSendHandler = Uart_sendBytes;
+    Interrupt_UartReceiveHandler = Uart_receiveData;
+    Interrupt_UartSendHandler = Uart_sendData;
     Interrupt_UartLineStateHandler = NULL;
     Interrupt_RtcSecondHandler = App_rtcSecondHandle;
 
