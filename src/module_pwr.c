@@ -496,7 +496,7 @@ void Pwr_toggleProc(void)
     Lcd_displayStringSh(6, Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_HIGHLIGHT);
 }
 
-static void Pwr_waitFor(void)
+void Pwr_waitFor(void)
 {
     Utility_waitFor((unsigned int)Pwr_WaitTicks);
 }

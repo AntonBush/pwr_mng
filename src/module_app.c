@@ -51,6 +51,8 @@ static void App_resetStats(uint32_t old_time);
 
 static void App_testProc(void);
 
+static void App_resolveCommands(void);
+
 // Variables
 
 #define APP__MAX_MENU_LEVELS 4
@@ -164,20 +166,8 @@ void App_down(void)
 
 void App_update(void)
 {
-    /********************** Uart echo ***********************/
-    Uart_MaybeReceivedChar maybe;
+    App_resolveCommands();
 
-    Uart_receiveData();
-    maybe = Uart_getChar();
-
-    while (maybe.received &&
-           (maybe.received_data.error != UART__RECIEVE_ERROR_NO_ERROR ||
-            Uart_putChar(maybe.received_data.ch))) {
-        maybe = Uart_getChar();
-    }
-    Uart_sendData();
-
-    /********************** Update gui ***********************/
     if (App_UpdateGuiSoon) {
         App_updateStats();
 
@@ -305,7 +295,77 @@ void App_resetStats(uint32_t old_time)
     Pwr_resetStats(Time_getRawTime());
 }
 
-static void App_testProc(void)
+void App_testProc(void)
 {
     Pwr_toggleTestWaitTicks();
+}
+
+typedef enum {
+    App_ResolveCommandState_init,
+    App_ResolveCommandState_device,
+    App_ResolveCommandState_device_x
+} App_ResolveCommandState;
+
+// S - send stats
+// D0n - turn Device 0 oN
+// other - clear buffer
+void App_resolveCommands(void)
+{
+    static App_ResolveCommandState state = App_ResolveCommandState_init;
+    static unsigned int chosen_device;
+    Uart_MaybeReceivedChar maybe;
+
+    Uart_receiveData();
+    maybe = Uart_getChar();
+
+    while (maybe.received) {
+        uint8_t ch = maybe.received_data.ch;
+
+        if (maybe.received_data.error != UART__RECIEVE_ERROR_NO_ERROR) {
+            continue;
+        }
+
+        if (state == App_ResolveCommandState_init) {
+            if (ch == 'S') {
+                App_sendStatsProc();
+            } else if (ch == 'D') {
+                state = App_ResolveCommandState_device;
+            } else {
+                Uart_putString("Unknown command: ");
+                Uart_putChar(ch);
+                Uart_putString("\r\nAvailable: 'S' - send stats, 'D' - choose device\r\n");
+            }
+        } else if (state == App_ResolveCommandState_device) {
+            if ('0' < ch && ch < '9') {
+                chosen_device = ch - '1';
+                state = App_ResolveCommandState_device_x;
+            } else {
+                state = App_ResolveCommandState_init;
+                Uart_putString("Unknown device number: ");
+                Uart_putChar(ch);
+                Uart_putString("\r\nAvailable: [1, 8]\r\n");
+            }
+        } else if (state == App_ResolveCommandState_device_x) {
+            int old_device = Pwr_currentDevice();
+            Pwr_setCurrentDevice(chosen_device);
+
+            if (ch == 'n') {
+                Pwr_turnDeviceOn();
+            } else if (ch == 'f') {
+                Pwr_turnDeviceOff();
+            } else {
+                Uart_putString("Unknown turn command: ");
+                Uart_putChar(ch);
+                Uart_putString("\r\nAvailable: 'n' - on, 'f' - off\r\n");
+            }
+
+            state = App_ResolveCommandState_init;
+            Pwr_setCurrentDevice(old_device);
+        }
+
+        Uart_sendData();
+
+        maybe = Uart_getChar();
+    }
+    Uart_sendData();
 }

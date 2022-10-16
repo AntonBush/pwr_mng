@@ -41,8 +41,8 @@ void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update);
 int Pwr_currentDevice(void);
 void Pwr_setCurrentDevice(int device);
 
-void Pwrmng_turnDeviceOn(void);
-void Pwrmng_turnDeviceOff(void);
+void Pwr_turnDeviceOn(void);
+void Pwr_turnDeviceOff(void);
 
 uint8_t *Pwr_getStats(void);
 
