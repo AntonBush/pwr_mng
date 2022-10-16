@@ -60,7 +60,7 @@ void Lcd_displayStringSh(uint32_t shift, Lcd_Line line, ucint8_t *str, int style
     shift_x = CurrentFont->Width * shift;
     x += shift_x;
 
-    Lcd_displayStringX(x, line, str + shift_x, style);
+    Lcd_displayStringX(x, line, str + shift, style);
 }
 
 void Lcd_displayString(Lcd_Line line, ucint8_t *str, int style)

@@ -86,7 +86,7 @@ Uart_MaybeReceivedChar Uart_getChar(void)
     } else {
         maybe.received = TRUE;
         maybe.received_data = Uart_ReceiveBuffer.data[begin];
-        begin = (begin + 1) % UART__BUFFER_SIZE;
+        Uart_ReceiveBuffer.begin = (begin + 1) % UART__BUFFER_SIZE;
     }
 
     return maybe;
@@ -112,15 +112,15 @@ int Uart_getString(Uart_ReceivedChar *str)
 // return TRUE if successfully
 bool Uart_putChar(uint8_t ch)
 {
-    size_t begin = Uart_ReceiveBuffer.begin;
-    size_t end = Uart_ReceiveBuffer.end;
+    size_t begin = Uart_SendBuffer.begin;
+    size_t end = Uart_SendBuffer.end;
 
     if ((end + 1) % UART__BUFFER_SIZE == begin) {
         return FALSE;
     }
 
     Uart_SendBuffer.data[end] = ch;
-    end = (end + 1) % UART__BUFFER_SIZE;
+    Uart_SendBuffer.end = (end + 1) % UART__BUFFER_SIZE;
     return TRUE;
 }
 // param 'str' must contain '\0' character
@@ -140,9 +140,9 @@ bool Uart_putWholeString(uint8_t *str)
 {
     size_t begin = Uart_ReceiveBuffer.begin;
     size_t end = Uart_ReceiveBuffer.end;
-    size_t size = (begin <= end) ? (end - begin) : (end + UART__BUFFER_SIZE - begin);
+    size_t free_space = UART__BUFFER_SIZE - (begin <= end ? end - begin : end + UART__BUFFER_SIZE - begin);
 
-    if (size < strlen((char *)str)) {
+    if (free_space < strlen((char *)str)) {
         return FALSE;
     }
 
@@ -172,8 +172,10 @@ void Uart_receiveData(void)
         received_char->error = UART_Flags(received_data);
 
         ++Uart_ReceiveBuffer.end;
-        Uart_SendBuffer.end %= UART__BUFFER_SIZE;
+        Uart_ReceiveBuffer.end %= UART__BUFFER_SIZE;
     }
+
+    --busy;
 }
 void Uart_sendData(void)
 {
@@ -191,4 +193,6 @@ void Uart_sendData(void)
         ++Uart_SendBuffer.begin;
         Uart_SendBuffer.begin %= UART__BUFFER_SIZE;
     }
+
+    --busy;
 }

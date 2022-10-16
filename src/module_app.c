@@ -49,6 +49,8 @@ static void App_updateStats(void);
 
 static void App_resetStats(uint32_t old_time);
 
+static void App_testProc(void);
+
 // Variables
 
 #define APP__MAX_MENU_LEVELS 4
@@ -61,7 +63,8 @@ static volatile bool App_UpdateGuiSoon = FALSE;
 /* Main menu */
 static Menu_MenuItem App_MainMenuItems[] = {{"Devices", &Pwr_DeviceMenu, NULL},
                                             {"SetTime", &Time_SetTimeMenu, NULL},
-                                            {"Force Send", NULL, App_sendStatsProc}};
+                                            {"Force Send", NULL, App_sendStatsProc},
+                                            {"Test", NULL, App_testProc}};
 
 static Menu_Menu MainMenu = {"Main menu",
                              App_MainMenuItems,
@@ -300,4 +303,9 @@ void App_resetStats(uint32_t old_time)
 {
     Pwr_updateStats(old_time);
     Pwr_resetStats(Time_getRawTime());
+}
+
+static void App_testProc(void)
+{
+    Pwr_toggleTestWaitTicks();
 }

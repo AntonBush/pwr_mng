@@ -23,6 +23,11 @@ typedef struct
     unsigned int address;
 } Pwr_Device;
 
+typedef enum {
+    Pwr_WaitForTicks_fast = 8000,
+    Pwr_WaitForTicks_test = 800000
+} Pwr_WaitForTicks;
+
 // Pwr private function prototypes
 
 static void Pwr_updateGuiStr(void);
@@ -47,6 +52,8 @@ static void Pwr_update(void);
 
 static void Pwr_turnDevice(Pwr_DeviceState state);
 static void Pwr_toggleProc(void);
+
+static void Pwr_waitFor(void);
 
 // Variables
 
@@ -140,6 +147,8 @@ Menu_Menu Pwr_DeviceMenu = {"Devices",
 
 static Utility_Procedure *Pwr_Update = NULL;
 
+static Pwr_WaitForTicks Pwr_WaitTicks = Pwr_WaitForTicks_fast;
+
 // Pwr public functions
 
 void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update)
@@ -153,11 +162,11 @@ void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update)
         PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
         PORT_SetBits(PWR__ADDR_PORT, Pwr_Devices[device_index].address);
 
-        Utility_waitFor(8000);
+        Pwr_waitFor();
 
         // Do 0->1 edge
         PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-        Utility_waitFor(8000);
+        Pwr_waitFor();
         PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
     }
 
@@ -259,7 +268,7 @@ uint8_t *Pwr_getStats(void)
         base_i = i * 28;
         device = Pwr_Devices + i;
 
-        stats[base_i + 3] = (device->state) ? 'f' : 'n';
+        stats[base_i + 3] = (device->state) ? 'n' : 'f';
 
         edit = Time_timeEdit(device->worktime);
 
@@ -314,6 +323,15 @@ void Pwr_resetStats(uint32_t time)
     for (i = 0; i < PWR__N_DEVICES; ++i) {
         Pwr_Device *device = Pwr_Devices + i;
         device->last_update = time;
+    }
+}
+
+void Pwr_toggleTestWaitTicks(void)
+{
+    if (Pwr_WaitTicks == Pwr_WaitForTicks_fast) {
+        Pwr_WaitTicks = Pwr_WaitForTicks_test;
+    } else {
+        Pwr_WaitTicks = Pwr_WaitForTicks_fast;
     }
 }
 
@@ -442,7 +460,7 @@ void Pwr_turnDevice(Pwr_DeviceState state)
 {
     // CMD = 0
     PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Utility_waitFor(8000);
+    Pwr_waitFor();
 
     // ADDR = current device
     PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
@@ -456,9 +474,10 @@ void Pwr_turnDevice(Pwr_DeviceState state)
         PORT_ResetBits(PWR__DATA_PORT, PWR__DATA_PIN);
     }
 
+    Pwr_waitFor();
     // C = 0->1
     PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Utility_waitFor(8000);
+    Pwr_waitFor();
 
     // C = 0
     PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
@@ -475,4 +494,9 @@ void Pwr_toggleProc(void)
 
     Pwr_updateGuiStr();
     Lcd_displayStringSh(6, Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_HIGHLIGHT);
+}
+
+static void Pwr_waitFor(void)
+{
+    Utility_waitFor((unsigned int)Pwr_WaitTicks);
 }
