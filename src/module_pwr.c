@@ -26,7 +26,6 @@ typedef struct
 // Pwr private function prototypes
 
 static void Pwr_updateGuiStr(void);
-static void Pwr_waitFor(unsigned int ticks);
 
 static void Pwr_stdUpProc(void);
 static void Pwr_stdSelectProc(void);
@@ -154,11 +153,11 @@ void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update)
         PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
         PORT_SetBits(PWR__ADDR_PORT, Pwr_Devices[device_index].address);
 
-        Pwr_waitFor(100);
+        Utility_waitFor(8000);
 
         // Do 0->1 edge
         PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-        Pwr_waitFor(100);
+        Utility_waitFor(8000);
         PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
     }
 
@@ -360,13 +359,6 @@ void Pwr_updateGuiStr(void)
     Pwr_PreviousWorktimeStr[14] = Utility_intToChar(edit.second / 10);
     Pwr_PreviousWorktimeStr[15] = Utility_intToChar(edit.second % 10);
 }
-void Pwr_waitFor(unsigned int ticks)
-{
-    unsigned int i;
-    for (i = 0; i < ticks; ++i) {
-        __NOP();
-    }
-}
 
 void Pwr_stdUpProc(void)
 {
@@ -450,7 +442,7 @@ void Pwr_turnDevice(Pwr_DeviceState state)
 {
     // CMD = 0
     PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Pwr_waitFor(100);
+    Utility_waitFor(8000);
 
     // ADDR = current device
     PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
@@ -466,7 +458,7 @@ void Pwr_turnDevice(Pwr_DeviceState state)
 
     // C = 0->1
     PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Pwr_waitFor(100);
+    Utility_waitFor(8000);
 
     // C = 0
     PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);

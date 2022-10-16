@@ -167,13 +167,12 @@ void App_update(void)
     Uart_receiveData();
     maybe = Uart_getChar();
 
-    while (maybe.received) {
-        if (maybe.received_data.error == UART__RECIEVE_ERROR_NO_ERROR &&
-            !Uart_putChar(maybe.received_data.ch)) {
-            break;
-        }
+    while (maybe.received &&
+           (maybe.received_data.error != UART__RECIEVE_ERROR_NO_ERROR ||
+            Uart_putChar(maybe.received_data.ch))) {
         maybe = Uart_getChar();
     }
+    Uart_sendData();
 
     /********************** Update gui ***********************/
     if (App_UpdateGuiSoon) {
