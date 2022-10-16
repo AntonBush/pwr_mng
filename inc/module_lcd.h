@@ -21,6 +21,8 @@ typedef enum {
 
 extern const Lcd_Line *Lcd_Lines;
 
+void Lcd_displayStringX(uint32_t x, Lcd_Line line, ucint8_t *str, int style);
+void Lcd_displayStringSh(uint32_t shift, Lcd_Line line, ucint8_t *str, int style);
 void Lcd_displayString(Lcd_Line line, ucint8_t *str, int style);
 void Lcd_displayLine(uint8_t y);
 void Lcd_clear(void);

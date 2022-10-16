@@ -14,14 +14,12 @@ static const Lcd_Line Lcd_LineArray[] = {Lcd_Line_line0,
 
 const Lcd_Line *Lcd_Lines = Lcd_LineArray;
 
-void Lcd_displayString(Lcd_Line line, ucint8_t *str, int style)
+void Lcd_displayStringX(uint32_t x, Lcd_Line line, ucint8_t *str, int style)
 {
-    uint32_t x, i, tmp;
+    uint32_t i, tmp;
     bool highlight = FALSE;
     bool override_line = FALSE;
     bool no_override = FALSE;
-
-    x = (MAX_X - (CurrentFont->Width * strlen((const char *)str))) / 2;
 
     if (style & LCD__STYLE_HIGHLIGHT) {
         highlight = TRUE;
@@ -46,6 +44,29 @@ void Lcd_displayString(Lcd_Line line, ucint8_t *str, int style)
 
     CurrentMethod = highlight ? MET_NOT_XOR : MET_OR;
     LCD_PUTS(x, (uint8_t)line, str);
+}
+
+void Lcd_displayStringSh(uint32_t shift, Lcd_Line line, ucint8_t *str, int style)
+{
+    uint32_t x;
+    uint32_t shift_x;
+    uint32_t str_length = strlen((const char *)str);
+
+    if (str_length <= shift) {
+        return;
+    }
+
+    x = (MAX_X - (CurrentFont->Width * str_length)) / 2;
+    shift_x = CurrentFont->Width * shift;
+    x += shift_x;
+
+    Lcd_displayStringX(x, line, str + shift_x, style);
+}
+
+void Lcd_displayString(Lcd_Line line, ucint8_t *str, int style)
+{
+    uint32_t x = (MAX_X - (CurrentFont->Width * strlen((const char *)str))) / 2;
+    Lcd_displayStringX(x, line, str, style);
 }
 
 void Lcd_displayLine(uint8_t y)

@@ -426,9 +426,9 @@ void Pwr_updateGuiProc(void)
     size_t index = Pwr_MainDeviceMenu.item_index;
     Pwr_updateGuiStr();
 
-    Lcd_displayString(Lcd_Line_line2, Pwr_StateStr, (index == 1 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
-    Lcd_displayString(Lcd_Line_line3, Pwr_WorktimeStr, (index == 2 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
-    Lcd_displayString(Lcd_Line_line4, Pwr_PreviousWorktimeStr, (index == 3 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
+    Lcd_displayStringSh(6, Lcd_Line_line2, Pwr_StateStr, (index == 1 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
+    Lcd_displayStringSh(7, Lcd_Line_line3, Pwr_WorktimeStr, (index == 2 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
+    Lcd_displayStringSh(8, Lcd_Line_line4, Pwr_PreviousWorktimeStr, (index == 3 ? LCD__STYLE_HIGHLIGHT : LCD__STYLE_NO_STYLE));
 }
 
 void Pwr_update(void)
@@ -474,5 +474,5 @@ void Pwr_toggleProc(void)
     }
 
     Pwr_updateGuiStr();
-    Lcd_displayString(Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_HIGHLIGHT);
+    Lcd_displayStringSh(6, Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_HIGHLIGHT);
 }
