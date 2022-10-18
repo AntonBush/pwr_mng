@@ -20,7 +20,8 @@ typedef struct
     unsigned int last_update;
     unsigned int worktime;
     unsigned int previous_worktime;
-    unsigned int address;
+    MDR_PORT_TypeDef *port;
+    uint32_t pin;
 } Pwr_Device;
 
 typedef enum {
@@ -36,7 +37,6 @@ static void Pwr_stdUpProc(void);
 static void Pwr_stdSelectProc(void);
 static void Pwr_stdDownProc(void);
 
-static void Pwr_setDevice0Proc(void);
 static void Pwr_setDevice1Proc(void);
 static void Pwr_setDevice2Proc(void);
 static void Pwr_setDevice3Proc(void);
@@ -44,7 +44,6 @@ static void Pwr_setDevice3Proc(void);
 static void Pwr_setDevice4Proc(void);
 static void Pwr_setDevice5Proc(void);
 static void Pwr_setDevice6Proc(void);
-static void Pwr_setDevice7Proc(void);
 
 static void Pwr_updateGuiProc(void);
 
@@ -53,19 +52,15 @@ static void Pwr_update(void);
 static void Pwr_turnDevice(Pwr_DeviceState state);
 static void Pwr_toggleProc(void);
 
-static void Pwr_waitFor(void);
-
 // Variables
 
-static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_0},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_1},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_2},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_3},
+static Pwr_Device Pwr_Devices[PWR__N_DEVICES] = {{Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_1_PORT, PWR__DEVICE_1_PIN},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_2_PORT, PWR__DEVICE_2_PIN},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_3_PORT, PWR__DEVICE_3_PIN},
 
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_4},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_5},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_6},
-                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_7}};
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_4_PORT, PWR__DEVICE_4_PIN},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_5_PORT, PWR__DEVICE_5_PIN},
+                                                 {Pwr_DeviceState_off, 0, 0, 0, PWR__DEVICE_6_PORT, PWR__DEVICE_6_PIN}};
 static size_t Pwr_DeviceIndex = 0;
 
 static uint8_t Pwr_DeviceStr[] = {'D', 'e', 'v', 'i', 'c', 'e', ' ', '0', '\0'};
@@ -90,7 +85,6 @@ Utility_Procedure *Pwr_StdUpProc = NULL;
 Utility_Procedure *Pwr_StdSelectProc = NULL;
 Utility_Procedure *Pwr_StdDownProc = NULL;
 
-#define PWR__RETURN_ITEM_INDEX 4
 static Menu_MenuItem Pwr_MainDeviceMenuItems[] = {{Pwr_DeviceStr, NULL, NULL},
                                                   {Pwr_StateStr, NULL, Pwr_toggleProc},
                                                   {Pwr_WorktimeStr, NULL, NULL},
@@ -105,36 +99,34 @@ static Menu_Menu Pwr_MainDeviceMenu = {"Device info",
                                        Pwr_stdDownProc,
                                        Pwr_updateGuiProc};
 
-static Menu_MenuItem Pwr_Device14MenuItems[] = {{"Device 1", &Pwr_MainDeviceMenu, Pwr_setDevice0Proc},
-                                                {"Device 2", &Pwr_MainDeviceMenu, Pwr_setDevice1Proc},
-                                                {"Device 3", &Pwr_MainDeviceMenu, Pwr_setDevice2Proc},
-                                                {"Device 4", &Pwr_MainDeviceMenu, Pwr_setDevice3Proc},
+static Menu_MenuItem Pwr_Device13MenuItems[] = {{"Device 1", &Pwr_MainDeviceMenu, Pwr_setDevice1Proc},
+                                                {"Device 2", &Pwr_MainDeviceMenu, Pwr_setDevice2Proc},
+                                                {"Device 3", &Pwr_MainDeviceMenu, Pwr_setDevice3Proc},
                                                 {"Return", NULL, NULL}};
-static Menu_Menu Pwr_Device14Menu = {"Devices 1-4",
-                                     Pwr_Device14MenuItems,
-                                     UTILITY__COUNT_OF(Pwr_Device14MenuItems),
+static Menu_Menu Pwr_Device13Menu = {"Devices 1-3",
+                                     Pwr_Device13MenuItems,
+                                     UTILITY__COUNT_OF(Pwr_Device13MenuItems),
                                      0,
                                      Pwr_stdUpProc,
                                      Pwr_stdSelectProc,
                                      Pwr_stdDownProc,
                                      NULL};
 
-static Menu_MenuItem Pwr_Device58MenuItems[] = {{"Device 5", &Pwr_MainDeviceMenu, Pwr_setDevice4Proc},
-                                                {"Device 6", &Pwr_MainDeviceMenu, Pwr_setDevice5Proc},
-                                                {"Device 7", &Pwr_MainDeviceMenu, Pwr_setDevice6Proc},
-                                                {"Device 8", &Pwr_MainDeviceMenu, Pwr_setDevice7Proc},
+static Menu_MenuItem Pwr_Device46MenuItems[] = {{"Device 4", &Pwr_MainDeviceMenu, Pwr_setDevice4Proc},
+                                                {"Device 5", &Pwr_MainDeviceMenu, Pwr_setDevice5Proc},
+                                                {"Device 6", &Pwr_MainDeviceMenu, Pwr_setDevice6Proc},
                                                 {"Return", NULL, NULL}};
-static Menu_Menu Pwr_Device58Menu = {"Devices 5-8",
-                                     Pwr_Device58MenuItems,
-                                     UTILITY__COUNT_OF(Pwr_Device58MenuItems),
+static Menu_Menu Pwr_Device46Menu = {"Devices 4-6",
+                                     Pwr_Device46MenuItems,
+                                     UTILITY__COUNT_OF(Pwr_Device46MenuItems),
                                      0,
                                      Pwr_stdUpProc,
                                      Pwr_stdSelectProc,
                                      Pwr_stdDownProc,
                                      NULL};
 
-static Menu_MenuItem Pwr_DeviceMenuItems[] = {{"Devices 1-4", &Pwr_Device14Menu, NULL},
-                                              {"Devices 5-8", &Pwr_Device58Menu, NULL},
+static Menu_MenuItem Pwr_DeviceMenuItems[] = {{"Devices 1-3", &Pwr_Device13Menu, NULL},
+                                              {"Devices 4-6", &Pwr_Device46Menu, NULL},
                                               {"Return", NULL, NULL}};
 Menu_Menu Pwr_DeviceMenu = {"Devices",
                             Pwr_DeviceMenuItems,
@@ -153,26 +145,16 @@ static Pwr_WaitForTicks Pwr_WaitTicks = Pwr_WaitForTicks_fast;
 
 void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update)
 {
-    unsigned int device_index;
+    size_t i;
 
-    PORT_ResetBits(PWR__DATA_PORT, PWR__DATA_PIN);
-    PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-
-    for (device_index = 0; device_index < PWR__N_DEVICES; ++device_index) {
-        PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
-        PORT_SetBits(PWR__ADDR_PORT, Pwr_Devices[device_index].address);
-
-        Pwr_waitFor();
-
-        // Do 0->1 edge
-        PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-        Pwr_waitFor();
-        PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
+    for (i = 0; i < PWR__N_DEVICES; ++i) {
+        Pwr_Device *device = Pwr_Devices + i;
+        PORT_ResetBits(device->port, device->pin);
     }
 
-    Pwr_MainDeviceMenuItems[PWR__RETURN_ITEM_INDEX].proc = return_proc;
-    Pwr_Device14MenuItems[PWR__RETURN_ITEM_INDEX].proc = return_proc;
-    Pwr_Device58MenuItems[PWR__RETURN_ITEM_INDEX].proc = return_proc;
+    Pwr_MainDeviceMenuItems[UTILITY__COUNT_OF(Pwr_MainDeviceMenuItems) - 1].proc = return_proc;
+    Pwr_Device13MenuItems[UTILITY__COUNT_OF(Pwr_Device13MenuItems) - 1].proc = return_proc;
+    Pwr_Device46MenuItems[UTILITY__COUNT_OF(Pwr_Device46MenuItems) - 1].proc = return_proc;
     Pwr_DeviceMenuItems[UTILITY__COUNT_OF(Pwr_DeviceMenuItems) - 1].proc = return_proc;
     Pwr_Update = update;
 }
@@ -183,12 +165,13 @@ int Pwr_currentDevice(void)
 }
 void Pwr_setCurrentDevice(int device)
 {
-    if (device < 0)
+    if (device < 0) {
         Pwr_DeviceIndex = 0;
-    else if (device >= PWR__N_DEVICES)
+    } else if (PWR__N_DEVICES <= device) {
         Pwr_DeviceIndex = PWR__N_DEVICES - 1;
-    else
+    } else {
         Pwr_DeviceIndex = device;
+    }
 }
 
 void Pwr_turnDeviceOn(void)
@@ -397,45 +380,35 @@ void Pwr_stdDownProc(void)
     }
 }
 
-void Pwr_setDevice0Proc(void)
-{
-    Pwr_setCurrentDevice(PWR__DEVICE_0);
-    Pwr_updateGuiStr();
-}
 void Pwr_setDevice1Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_1);
+    Pwr_setCurrentDevice(0);
     Pwr_updateGuiStr();
 }
 void Pwr_setDevice2Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_2);
+    Pwr_setCurrentDevice(1);
     Pwr_updateGuiStr();
 }
 void Pwr_setDevice3Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_3);
+    Pwr_setCurrentDevice(2);
     Pwr_updateGuiStr();
 }
 
 void Pwr_setDevice4Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_4);
+    Pwr_setCurrentDevice(3);
     Pwr_updateGuiStr();
 }
 void Pwr_setDevice5Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_5);
+    Pwr_setCurrentDevice(4);
     Pwr_updateGuiStr();
 }
 void Pwr_setDevice6Proc(void)
 {
-    Pwr_setCurrentDevice(PWR__DEVICE_6);
-    Pwr_updateGuiStr();
-}
-void Pwr_setDevice7Proc(void)
-{
-    Pwr_setCurrentDevice(PWR__DEVICE_7);
+    Pwr_setCurrentDevice(5);
     Pwr_updateGuiStr();
 }
 
@@ -458,31 +431,15 @@ void Pwr_update(void)
 
 void Pwr_turnDevice(Pwr_DeviceState state)
 {
-    // CMD = 0
-    PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Pwr_waitFor();
-
-    // ADDR = current device
-    PORT_ResetBits(PWR__ADDR_PORT, PWR__ADDR_PINS);
-    PORT_SetBits(PWR__ADDR_PORT, Pwr_Devices[Pwr_DeviceIndex].address);
+    Pwr_Device *device = Pwr_Devices + Pwr_DeviceIndex;
 
     if (state) {
-        // DATA = 1
-        PORT_SetBits(PWR__DATA_PORT, PWR__DATA_PIN);
+        PORT_ResetBits(device->port, device->pin);
     } else {
-        // DATA = 0
-        PORT_ResetBits(PWR__DATA_PORT, PWR__DATA_PIN);
+        PORT_SetBits(device->port, device->pin);
     }
 
-    Pwr_waitFor();
-    // C = 0->1
-    PORT_SetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-    Pwr_waitFor();
-
-    // C = 0
-    PORT_ResetBits(PWR__CMD_PORT, PWR__CMD_PIN);
-
-    Pwr_Devices[Pwr_DeviceIndex].state = state;
+    device->state = state;
 }
 void Pwr_toggleProc(void)
 {
@@ -494,9 +451,4 @@ void Pwr_toggleProc(void)
 
     Pwr_updateGuiStr();
     Lcd_displayStringSh(6, Lcd_Line_line2, Pwr_StateStr, LCD__STYLE_HIGHLIGHT);
-}
-
-void Pwr_waitFor(void)
-{
-    Utility_waitFor((unsigned int)Pwr_WaitTicks);
 }

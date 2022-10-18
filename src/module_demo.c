@@ -4,7 +4,6 @@
 
 #include "lcd.h"
 #include "joystick.h"
-#include "leds.h"
 
 #include <MDR32F9Qx_rst_clk.h>
 #include <MDR32F9Qx_port.h>
@@ -48,19 +47,12 @@ void Demo_init(void)
 
     /* Configure LCD_CLOCK_PORT for CLOCK signal control*/
     /* Set LCD CLOCK signal to its initial value (0) */
-    ///////////////////////////////// CONFLICT WITH LEDS ON MDR32F9Q2 /////////////////////////////////////////////////////////////////////////////////////////////////
-    // PortInitStructure.PORT_Pin = LCD_CLOCK_PIN;
-    // PortInitStructure.PORT_FUNC = PORT_FUNC_PORT;
-    // PortInitStructure.PORT_OE = PORT_OE_OUT;
-    // PortInitStructure.PORT_SPEED = PORT_SPEED_FAST;
-    // PortInitStructure.PORT_MODE = PORT_MODE_DIGITAL;
     PORT_ResetBits(LCD_CLOCK_PORT, LCD_CLOCK_PIN);
 
     PortInitStructure.PORT_Pin = LCD_CLOCK_PIN;
     PortInitStructure.PORT_SPEED = PORT_SPEED_FAST;
 
     PORT_Init(LCD_CLOCK_PORT, &PortInitStructure);
-    ///////////////////////////////// END /////////////////////////////////////////////////////////////////////////////////////////////////
 
     /* Configure LCD_CRYSTAL_PORT for LCD crystal control */
     /* De-select both LCD crystals*/
@@ -72,16 +64,9 @@ void Demo_init(void)
     PORT_Init(LCD_CRYSTAL_PORT, &PortInitStructure);
 
     /* Configure LCD_CMD_DATA_PORT for data/command mode switching */
-    ///////////////////////////////// CONFLICT WITH LEDS ON MDR32F9Q2 /////////////////////////////////////////////////////////////////////////////////////////////////
-    // PortInitStructure.PORT_Pin = LCD_CMD_DATA_PIN;
-    // PortInitStructure.PORT_FUNC = PORT_FUNC_PORT;
-    // PortInitStructure.PORT_OE = PORT_OE_OUT;
-    // PortInitStructure.PORT_SPEED = PORT_SPEED_SLOW;
-    // PortInitStructure.PORT_MODE = PORT_MODE_DIGITAL;
     PortInitStructure.PORT_Pin = LCD_CMD_DATA_PIN;
 
     PORT_Init(LCD_CMD_DATA_PORT, &PortInitStructure);
-    ///////////////////////////////// END /////////////////////////////////////////////////////////////////////////////////////////////////
 
     /* Configure LCD_RESET_PORT for RESET signal control */
     /* Zeroing LCD RES signal (initial state) */
@@ -124,42 +109,26 @@ void Demo_init(void)
 
     PORT_Init(RIGHT_PORT, &PortInitStructure);
 
-    /////////////////////////////////////////////// CONFLICTS WITH LCD ON MDR32F9Q2 //////////////////////////////////////////////////////////
-    /////////////////////////////////////////////// SAVE/RESTORE PORT CONFIG IN LEDS MODULE //////////////////////////////////////////////////
-    /************************ LEDs Initialization *************************/
-
-    /* Configure LEDs_PORT for output to switch LEDs on/off */
-    //  PortInitStructure.PORT_Pin   = LEDs_PINs;
-    //  PortInitStructure.PORT_OE    = PORT_OE_OUT;
-    //  PortInitStructure.PORT_FUNC  = PORT_FUNC_PORT;
-
-    //  PORT_Init(LEDs_PORT, &PortInitStructure);
-
-    /* All LEDs switch off */
-    //  PORT_ResetBits(LEDs_PORT, LEDs_PINs);
-    /////////////////////////////////////////////// END //////////////////////////////////////////////////////////
-
     /************************ PWR Initialization *************************/
     PORT_StructInit(&PortInitStructure);
     PortInitStructure.PORT_FUNC = PORT_FUNC_PORT;
     PortInitStructure.PORT_OE = PORT_OE_OUT;
-    PortInitStructure.PORT_SPEED = PORT_SPEED_FAST;
+    PortInitStructure.PORT_SPEED = PORT_SPEED_SLOW;
     PortInitStructure.PORT_MODE = PORT_MODE_DIGITAL;
 
-    /* Configure PWR__ADDR_PORT for output to switch between devices */
-    PortInitStructure.PORT_Pin = PWR__ADDR_PINS;
+    PortInitStructure.PORT_Pin = PWR__DEVICE_1_PIN;
+    PORT_Init(PWR__DEVICE_1_PORT, &PortInitStructure);
+    PortInitStructure.PORT_Pin = PWR__DEVICE_2_PIN;
+    PORT_Init(PWR__DEVICE_2_PORT, &PortInitStructure);
+    PortInitStructure.PORT_Pin = PWR__DEVICE_3_PIN;
+    PORT_Init(PWR__DEVICE_3_PORT, &PortInitStructure);
 
-    PORT_Init(PWR__ADDR_PORT, &PortInitStructure);
-
-    /* Configure PWR__CMD_PORT for output to enable device power change */
-    PortInitStructure.PORT_Pin = PWR__CMD_PIN;
-
-    PORT_Init(PWR__CMD_PORT, &PortInitStructure);
-
-    /* Configure PWR__DATA_PORT for output to define device power change */
-    PortInitStructure.PORT_Pin = PWR__DATA_PIN;
-
-    PORT_Init(PWR__DATA_PORT, &PortInitStructure);
+    PortInitStructure.PORT_Pin = PWR__DEVICE_4_PIN;
+    PORT_Init(PWR__DEVICE_4_PORT, &PortInitStructure);
+    PortInitStructure.PORT_Pin = PWR__DEVICE_5_PIN;
+    PORT_Init(PWR__DEVICE_5_PORT, &PortInitStructure);
+    PortInitStructure.PORT_Pin = PWR__DEVICE_6_PIN;
+    PORT_Init(PWR__DEVICE_6_PORT, &PortInitStructure);
 
     /************************ Time Initialization *************************/
     PORT_StructInit(&PortInitStructure);

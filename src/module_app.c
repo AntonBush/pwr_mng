@@ -291,8 +291,16 @@ void App_updateStats(void)
 
 void App_resetStats(uint32_t old_time)
 {
+    uint32_t new_time = Time_getRawTime();
+
+    if (APP__TWELVE_HOURS <= new_time) {
+        App_SendStatsCounter = 2;
+    } else {
+        App_SendStatsCounter = 1;
+    }
+
     Pwr_updateStats(old_time);
-    Pwr_resetStats(Time_getRawTime());
+    Pwr_resetStats(new_time);
 }
 
 void App_testProc(void)
