@@ -23,7 +23,7 @@
 #define PWR__DEVICE_5_PIN  PORT_Pin_4
 
 #define PWR__DEVICE_6_PORT MDR_PORTD
-#define PWR__DEVICE_6_PIN  PORT_Pin_0
+#define PWR__DEVICE_6_PIN  PORT_Pin_5
 
 extern Utility_Procedure *Pwr_StdUpProc;
 extern Utility_Procedure *Pwr_StdSelectProc;
