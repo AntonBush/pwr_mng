@@ -434,9 +434,9 @@ void Pwr_turnDevice(Pwr_DeviceState state)
     Pwr_Device *device = Pwr_Devices + Pwr_DeviceIndex;
 
     if (state) {
-        PORT_ResetBits(device->port, device->pin);
-    } else {
         PORT_SetBits(device->port, device->pin);
+    } else {
+        PORT_ResetBits(device->port, device->pin);
     }
 
     device->state = state;
