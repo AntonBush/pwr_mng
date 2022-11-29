@@ -6,26 +6,12 @@
 #include "module_time.h"
 #include "module_interrupt.h"
 #include "module_uart.h"
+#include "module_eeprom.h"
 
 #include "joystick.h"
 
 #include <stddef.h>
 #include <string.h>
-//#include "types.h"
-//#include "lcd.h"
-//#include "gl.h"
-//#include "text.h"
-//#include "leds.h"
-//#include "menu.h"
-//#include "time.h"
-//#include "lowpower.h"
-//#include "MDR32F9Qx_port.h"
-//#include "Demo_Init.h"
-//#include "rtc.h"
-//#include "ff.h"
-//#include "diskio.h"
-//#include "systick.h"
-//#include <string.h>
 
 // Private function prototypes
 
@@ -53,6 +39,10 @@ static void App_testProc(void);
 
 static void App_resolveCommands(void);
 
+static void App_eepromRead13(void);
+static void App_eepromRead46(void);
+static void App_eepromUpdateCurrent(void);
+
 // Variables
 
 #define APP__MAX_MENU_LEVELS 4
@@ -62,20 +52,57 @@ static Menu_Menu *App_PreviousMenus[APP__MAX_MENU_LEVELS];
 static size_t App_MenuLevel;
 static volatile bool App_UpdateGuiSoon = FALSE;
 
+static uint8_t App_EepromWorktimeStrs[][18] = {
+    {'0', ':', ' ', '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0'},
+    {'0', ':', ' ', '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0'},
+    {'0', ':', ' ', '.', '.', 'h', '.', '.', 'm', '.', '.', 's', '\0'}};
+// d: 0
+// h: 3, 4
+// m: 6, 7
+// s: 9, 10
+
+/* EEPROM menu */
+static Menu_MenuItem App_Eeprom16MenuItems[] = {{App_EepromWorktimeStrs[0], NULL, App_eepromUpdateCurrent},
+                                                {App_EepromWorktimeStrs[1], NULL, App_eepromUpdateCurrent},
+                                                {App_EepromWorktimeStrs[2], NULL, App_eepromUpdateCurrent},
+                                                {"Return", NULL, App_returnProc}};
+
+static Menu_Menu App_Eeprom16Menu = {"EEPROM devices",
+                                     App_Eeprom16MenuItems,
+                                     UTILITY__COUNT_OF(App_Eeprom16MenuItems),
+                                     0,
+                                     App_upProc,
+                                     App_selectProc,
+                                     App_downProc,
+                                     NULL};
+
+static Menu_MenuItem App_EepromMenuItems[] = {{"Devices 1-3", &App_Eeprom16Menu, App_eepromRead13},
+                                              {"Devices 4-6", &App_Eeprom16Menu, App_eepromRead46}};
+
+static Menu_Menu App_EepromMenu = {"EEPROM devices",
+                                   App_EepromMenuItems,
+                                   UTILITY__COUNT_OF(App_EepromMenuItems),
+                                   0,
+                                   App_upProc,
+                                   App_selectProc,
+                                   App_downProc,
+                                   NULL};
+
 /* Main menu */
 static Menu_MenuItem App_MainMenuItems[] = {{"Devices", &Pwr_DeviceMenu, NULL},
                                             {"SetTime", &Time_SetTimeMenu, NULL},
                                             {"Force Send", NULL, App_sendStatsProc},
-                                            {"Test", NULL, App_testProc}};
+                                            {"Test", NULL, App_testProc},
+                                            {"EEPROM", &App_EepromMenu, NULL}};
 
-static Menu_Menu MainMenu = {"Main menu",
-                             App_MainMenuItems,
-                             UTILITY__COUNT_OF(App_MainMenuItems),
-                             0,
-                             App_upProc,
-                             App_selectProc,
-                             App_downProc,
-                             NULL};
+static Menu_Menu App_MainMenu = {"Main menu",
+                                 App_MainMenuItems,
+                                 UTILITY__COUNT_OF(App_MainMenuItems),
+                                 0,
+                                 App_upProc,
+                                 App_selectProc,
+                                 App_downProc,
+                                 NULL};
 
 static int App_SendStatsCounter = 1;
 
@@ -86,15 +113,15 @@ void App_init(void)
     Demo_init();
     Time_init(App_returnProc, App_resetStats);
 
-    Pwr_StdUpProc = App_upProc;
+    Pwr_StdUpProc     = App_upProc;
     Pwr_StdSelectProc = App_selectProc;
-    Pwr_StdDownProc = App_downProc;
+    Pwr_StdDownProc   = App_downProc;
     Pwr_init(App_returnProc, App_updateStats);
 
     Uart_init();
 
-    App_CurrentMenu = &MainMenu;
-    App_MenuLevel = 0;
+    App_CurrentMenu                  = &App_MainMenu;
+    App_MenuLevel                    = 0;
     App_PreviousMenus[App_MenuLevel] = App_CurrentMenu;
 
     if (App_isValidCurrentMenu()) Menu_displayMenu(App_CurrentMenu);
@@ -102,7 +129,7 @@ void App_init(void)
 
 void App_run(void)
 {
-    uint32_t key = NOKEY;
+    uint32_t key      = NOKEY;
     uint32_t last_key = NOKEY;
 
     while (TRUE) {
@@ -122,7 +149,7 @@ void App_run(void)
             App_update();
 
             last_key = key;
-            key = GetKey();
+            key      = GetKey();
         } while (key == last_key);
     }
 }
@@ -266,7 +293,7 @@ void App_updateStats(void)
 {
     uint32_t time, n_passed_days;
 
-    time = Time_getRawTime();
+    time          = Time_getRawTime();
     n_passed_days = Time_getNPassedDays();
 
     if (0 < n_passed_days) {
@@ -322,7 +349,7 @@ void App_resolveCommands(void)
     static App_ResolveCommandState state = App_ResolveCommandState_init;
     static unsigned int chosen_device;
     Uart_MaybeReceivedChar maybe;
-	
+
     Uart_receiveData();
     while (maybe = Uart_getChar(), maybe.received) {
         uint8_t ch = maybe.received_data.ch;
@@ -344,7 +371,7 @@ void App_resolveCommands(void)
         } else if (state == App_ResolveCommandState_device) {
             if ('0' < ch && ch < '9') {
                 chosen_device = ch - '1';
-                state = App_ResolveCommandState_device_x;
+                state         = App_ResolveCommandState_device_x;
             } else {
                 state = App_ResolveCommandState_init;
                 Uart_putString("Unknown device number: ");
@@ -370,4 +397,71 @@ void App_resolveCommands(void)
         }
     }
     Uart_sendData();
+}
+
+// h: 3, 4
+// m: 6, 7
+// s: 9, 10
+
+static void App_eepromRead(int x)
+{
+    int i;
+    int device_index;
+    int data_index;
+    for (i = 0, device_index = x + 1, data_index = 6 * x;
+         i < 3;
+         ++i, ++device_index) {
+
+        App_EepromWorktimeStrs[i][0] = '0' + device_index;
+
+        // h
+        App_EepromWorktimeStrs[i][3] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][4] = Eeprom_readByte(data_index++);
+
+        // m
+        App_EepromWorktimeStrs[i][6] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][7] = Eeprom_readByte(data_index++);
+
+        // s
+        App_EepromWorktimeStrs[i][9]  = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][10] = Eeprom_readByte(data_index++);
+    }
+}
+
+void App_eepromRead13(void)
+{
+    App_eepromRead(0);
+}
+
+void App_eepromRead46(void)
+{
+    App_eepromRead(3);
+}
+
+void App_eepromUpdateCurrent(void)
+{
+    int old_device;
+    Time_TimeEdit time;
+    int device_index;
+    int data_index;
+    int str_index = App_Eeprom16Menu.item_index;
+
+    device_index = App_EepromWorktimeStrs[str_index][0] - '0' - 1;
+
+    old_device = Pwr_currentDevice();
+    Pwr_setCurrentDevice(device_index);
+    time = Pwr_currentDeviceTimeEdit();
+    Pwr_setCurrentDevice(old_device);
+
+    data_index = 6 * device_index;
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][3] = time.hour / 10 % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][4] = time.hour % 10, data_index++);
+
+    // m
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][6] = time.minute / 10 % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][7] = time.minute % 10, data_index++);
+
+    // s
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][9] = time.second / 10 % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][10] = time.second % 10, data_index++);
 }

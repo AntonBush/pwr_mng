@@ -599,6 +599,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\module_utility.c</FilePath>
             </File>
+            <File>
+              <FileName>module_eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\module_eeprom.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -648,6 +653,11 @@
               <FileName>module_utility.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\module_utility.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_eeprom.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\module_eeprom.h</FilePath>
             </File>
           </Files>
         </Group>

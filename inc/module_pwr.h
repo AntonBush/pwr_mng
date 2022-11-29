@@ -2,6 +2,7 @@
 #define MODULE_PWR
 
 #include "module_menu.h"
+#include "module_time.h"
 
 #include <MDR32F9Qx_port.h>
 
@@ -35,6 +36,7 @@ extern Menu_Menu Pwr_DeviceMenu;
 void Pwr_init(Utility_Procedure *return_proc, Utility_Procedure *update);
 
 int Pwr_currentDevice(void);
+Time_TimeEdit Pwr_currentDeviceTimeEdit(void);
 void Pwr_setCurrentDevice(int device);
 
 void Pwr_turnDeviceOn(void);
