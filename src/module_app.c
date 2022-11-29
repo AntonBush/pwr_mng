@@ -322,11 +322,9 @@ void App_resolveCommands(void)
     static App_ResolveCommandState state = App_ResolveCommandState_init;
     static unsigned int chosen_device;
     Uart_MaybeReceivedChar maybe;
-
+	
     Uart_receiveData();
-    maybe = Uart_getChar();
-
-    while (maybe.received) {
+    while (maybe = Uart_getChar(), maybe.received) {
         uint8_t ch = maybe.received_data.ch;
 
         if (maybe.received_data.error != UART__RECIEVE_ERROR_NO_ERROR) {
@@ -370,10 +368,6 @@ void App_resolveCommands(void)
             state = App_ResolveCommandState_init;
             Pwr_setCurrentDevice(old_device);
         }
-
-        Uart_sendData();
-
-        maybe = Uart_getChar();
     }
     Uart_sendData();
 }
