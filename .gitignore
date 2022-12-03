@@ -8,3 +8,4 @@
 /.cmsis
 /.vscode
 /build
+!pwr_mng.sct

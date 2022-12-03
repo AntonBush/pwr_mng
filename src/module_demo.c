@@ -157,6 +157,9 @@ void Demo_init(void)
 
     /************************ *************************/
     Demo_configureRtc();
+	
+    /*************************************************/
+    RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
 }
 
 static void Demo_configureClock(void)

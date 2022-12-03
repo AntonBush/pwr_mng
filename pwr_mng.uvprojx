@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Library\Libraries\CMSIS\CM3\CoreSupport;.\Library\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\inc;.\Library\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm;.\;.\inc;.\config;.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\inc;.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\inc\USB_Library;.\src_fatfs</IncludePath>
+              <IncludePath>.\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -361,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -380,172 +380,6 @@
         </TargetArmAds>
       </TargetOption>
       <Groups>
-        <Group>
-          <GroupName>MDR32F9Qx_FWLib</GroupName>
-          <Files>
-            <File>
-              <FileName>MDR32F9Qx_wwdg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_wwdg.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_bkp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_bkp.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_can.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_comp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_comp.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_dac.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dac.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_dma.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_eeprom.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_eeprom.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>9</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>2</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_ebc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_ebc.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_iwdg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_iwdg.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_power.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_power.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_rst_clk.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_rst_clk.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_ssp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_ssp.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_usb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\MDR32F9Qx_StdPeriph_Driver\src\MDR32F9Qx_usb.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>target</GroupName>
-          <Files>
-            <File>
-              <FileName>startup_MDR32F9Qx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\Library\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\startup_MDR32F9Qx.s</FilePath>
-            </File>
-            <File>
-              <FileName>system_MDR32F9Qx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Library\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.c</FilePath>
-            </File>
-            <File>
-              <FileName>system_MDR32F9Qx.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Library\Libraries\CMSIS\CM3\DeviceSupport\MDR32F9Qx\startup\arm\system_MDR32F9Qx.h</FilePath>
-            </File>
-          </Files>
-        </Group>
         <Group>
           <GroupName>user</GroupName>
           <Files>
@@ -757,36 +591,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>leds</GroupName>
-          <Files>
-            <File>
-              <FileName>leds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\leds.c</FilePath>
-            </File>
-            <File>
-              <FileName>leds.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\leds.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>adc</GroupName>
-          <Files>
-            <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>ADC.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\ADC.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>common</GroupName>
           <Files>
             <File>
@@ -807,19 +611,10 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>config</GroupName>
-          <Files>
-            <File>
-              <FileName>MDR32F9Qx_board.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\config\MDR32F9Qx_board.h</FilePath>
-            </File>
-            <File>
-              <FileName>MDR32F9Qx_config.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\config\MDR32F9Qx_config.h</FilePath>
-            </File>
-          </Files>
+          <GroupName>::Device</GroupName>
+        </Group>
+        <Group>
+          <GroupName>::Drivers</GroupName>
         </Group>
       </Groups>
     </Target>
@@ -827,37 +622,94 @@
 
   <RTE>
     <apis/>
-    <components/>
+    <components>
+      <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="ADC" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="BKP" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="EEPROM" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng">
+            <mem>
+              <RVCTCodeConst>9</RVCTCodeConst>
+            </mem>
+          </targetInfo>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="PORT" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="RST_CLK" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Drivers" Cgroup="UART" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32FxQI_UART_DENPENDENCIES_RST_CLK">
+        <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
+      </component>
+    </components>
     <files>
       <file attr="config" category="linkerScript" name="IDE\scatter\MDR32F9Q2I.sct" version="2.0.2i">
-        <instance index="0" removed="1">RTE\Device\MDR32F9Q2I\MDR32F9Q2I.sct</instance>
+        <instance index="0">RTE\Device\MDR32F9Q2I\MDR32F9Q2I.sct</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I"/>
         <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
       </file>
       <file attr="config" category="header" name="Libraries\SPL\MDR32FxQI\MDR32FxQI_config.h" version="2.0.2i">
-        <instance index="0" removed="1">RTE\Device\MDR32F9Q2I\MDR32FxQI_config.h</instance>
+        <instance index="0">RTE\Device\MDR32F9Q2I\MDR32FxQI_config.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I"/>
         <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
       </file>
       <file attr="config" category="source" name="Libraries\CMSIS\MDR32FxQI\DeviceSupport\MDR32F9Q2I\startup\arm\startup_MDR32F9Q2I.S" version="2.0.2i">
-        <instance index="0" removed="1">RTE\Device\MDR32F9Q2I\startup_MDR32F9Q2I.S</instance>
+        <instance index="0">RTE\Device\MDR32F9Q2I\startup_MDR32F9Q2I.S</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I"/>
         <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
       </file>
       <file attr="config" category="source" name="Libraries\CMSIS\MDR32FxQI\DeviceSupport\MDR32F9Q2I\startup\system_MDR32F9Q2I.c" version="2.0.2i">
-        <instance index="0" removed="1">RTE\Device\MDR32F9Q2I\system_MDR32F9Q2I.c</instance>
+        <instance index="0">RTE\Device\MDR32F9Q2I\system_MDR32F9Q2I.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I"/>
         <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
       </file>
       <file attr="config" category="header" name="Libraries\CMSIS\MDR32FxQI\DeviceSupport\MDR32F9Q2I\startup\system_MDR32F9Q2I.h" version="2.0.2i">
-        <instance index="0" removed="1">RTE\Device\MDR32F9Q2I\system_MDR32F9Q2I.h</instance>
+        <instance index="0">RTE\Device\MDR32F9Q2I\system_MDR32F9Q2I.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Milandr" Cversion="2.0.2i" condition="CON_MDR32F9Q2I"/>
         <package name="MDR32FxQI" schemaVersion="1.2" url="https://ic.milandr.ru/soft/" vendor="Milandr" version="1.0"/>
-        <targetInfos/>
+        <targetInfos>
+          <targetInfo name="pwr_mng"/>
+        </targetInfos>
       </file>
     </files>
   </RTE>

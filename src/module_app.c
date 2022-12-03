@@ -117,6 +117,7 @@ void App_init(void)
     Pwr_init(App_returnProc, App_updateStats);
 
     Uart_init();
+    Eeprom_init();
 
     App_CurrentMenu                  = &App_MainMenu;
     App_MenuLevel                    = 0;
@@ -362,14 +363,14 @@ void App_resolveCommands(void)
                 Uart_putString("\r\nAvailable: 'S' - send stats, 'D' - choose device\r\n");
             }
         } else if (state == App_ResolveCommandState_device) {
-            if ('0' < ch && ch < '9') {
+            if ('0' < ch && ch < '7') {
                 chosen_device = ch - '1';
                 state         = App_ResolveCommandState_device_x;
             } else {
                 state = App_ResolveCommandState_init;
                 Uart_putString("Unknown device number: ");
                 Uart_putChar(ch);
-                Uart_putString("\r\nAvailable: [1, 8]\r\n");
+                Uart_putString("\r\nAvailable: [1, 6]\r\n");
             }
         } else if (state == App_ResolveCommandState_device_x) {
             int old_device = Pwr_currentDevice();
@@ -408,16 +409,16 @@ static void App_eepromRead(int x)
         App_EepromWorktimeStrs[i][0] = '0' + device_index;
 
         // h
-        App_EepromWorktimeStrs[i][3] = Utility_uintToChar(Eeprom_readByte(data_index++));
-        App_EepromWorktimeStrs[i][4] = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][3] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][4] = Eeprom_readByte(data_index++);
 
         // m
-        App_EepromWorktimeStrs[i][6] = Utility_uintToChar(Eeprom_readByte(data_index++));
-        App_EepromWorktimeStrs[i][7] = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][6] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][7] = Eeprom_readByte(data_index++);
 
         // s
-        App_EepromWorktimeStrs[i][9]  = Utility_uintToChar(Eeprom_readByte(data_index++));
-        App_EepromWorktimeStrs[i][10] = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][9]  = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][10] = Eeprom_readByte(data_index++);
     }
 }
 
