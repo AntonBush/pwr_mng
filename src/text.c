@@ -20,7 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
-#include <MDR32F9Qx_adc.h>
+#include "MDR32FxQI_adc.h"              // Milandr::Drivers:ADC
 #include "lcd.h"
 #include "text.h"
 #include "systick.h"

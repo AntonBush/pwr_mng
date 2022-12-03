@@ -21,11 +21,10 @@
 #define __LCD_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include <MDR32Fx.h>
-#include <MDR32F9Qx_port.h>
-#include <MDR32F9Qx_rst_clk.h>
+#include "MDR32FxQI_config.h"           // Milandr::Device:Startup
+#include "MDR32FxQI_port.h"             // Milandr::Drivers:PORT
+#include "MDR32FxQI_rst_clk.h"          // Milandr::Drivers:RST_CLK
 #include "types.h"
-#include "MDR32F9Qx_board.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
@@ -115,7 +114,8 @@ extern LCD_Method CurrentMethod;    /*!< Current display method    */
 #if defined (USE_MDR32F9Q1_Rev0) || defined (USE_MDR32F9Q1_Rev1)
 #include "lcd_MDR32F9Q1.h"
 #elif defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
-      defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
+      defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1) || \
+			defined (USE_MDR32F9Q2I)
 #include "lcd_MDR32F9Qx.h"
 #endif
 

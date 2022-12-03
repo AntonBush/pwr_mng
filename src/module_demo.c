@@ -5,9 +5,9 @@
 #include "lcd.h"
 #include "joystick.h"
 
-#include <MDR32F9Qx_rst_clk.h>
-#include <MDR32F9Qx_port.h>
-#include <MDR32F9Qx_bkp.h>
+#include "MDR32FxQI_rst_clk.h"          // Milandr::Drivers:RST_CLK
+#include "MDR32FxQI_port.h"             // Milandr::Drivers:PORT
+#include "MDR32FxQI_bkp.h"              // Milandr::Drivers:BKP
 
 #define ALL_PORTS_CLK (RST_CLK_PCLK_PORTA | RST_CLK_PCLK_PORTB | \
                        RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTD | \
@@ -195,7 +195,7 @@ static void Demo_configureRtc(void)
     BKP_RTC_WaitForUpdate();
 
     /* Enable the RTC Clock */
-    BKP_RTC_Enable(ENABLE);
+    BKP_RTC_WorkPermit(ENABLE);
 
     /* Enable the Second interrupt */
     BKP_RTC_ITConfig(BKP_RTC_IT_SECF, ENABLE);

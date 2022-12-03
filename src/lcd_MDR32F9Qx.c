@@ -21,10 +21,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "lcd.h"
 
-#include "lcd_MDR32F9Qx.h"
-
 #if defined (USE_MDR32F9Q2_Rev0)  || defined (USE_MDR32F9Q2_Rev1) || \
-    defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
+    defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1) || \
+		defined (USE_MDR32F9Q2I)
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{

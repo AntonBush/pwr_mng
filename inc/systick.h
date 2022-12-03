@@ -23,7 +23,7 @@
 #define __SYSTICK_H
 
 /* Includes ------------------------------------------------------------------*/
-#include <MDR32Fx.h>
+#include "MDR32FxQI_config.h"           // Milandr::Device:Startup
 #include "types.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example

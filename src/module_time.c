@@ -1,10 +1,7 @@
 #include "module_time.h"
 
-#include "MDR32F9Qx_config.h"
-#include <MDR32Fx.h>
-#include <MDR32F9Qx_port.h>
-#include <MDR32F9Qx_bkp.h>
-#include <MDR32F9Qx_rst_clk.h>
+#include "MDR32FxQI_bkp.h"              // Milandr::Drivers:BKP
+#include "MDR32FxQI_rst_clk.h"          // Milandr::Drivers:RST_CLK
 
 // Private functions prototypes
 

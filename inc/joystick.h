@@ -22,9 +22,8 @@
 #define __JOYSTICK_H
 
 /* Includes ------------------------------------------------------------------*/
-#include <MDR32Fx.h>
+#include "MDR32FxQI_config.h"           // Milandr::Device:Startup
 #include "types.h"
-#include "MDR32F9Qx_board.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{
@@ -83,7 +82,7 @@ typedef enum
 #define RIGHT_PORT         MDR_PORTF
 #define RIGHT_PIN          PORT_Pin_6
 
-#elif defined (USE_MDR32F9Q2_Rev1)
+#elif defined (USE_MDR32F9Q2_Rev1) || defined (USE_MDR32F9Q2I)
 #define SEL_PORT           MDR_PORTC
 #define SEL_PIN            PORT_Pin_2
 #define UP_PORT            MDR_PORTB

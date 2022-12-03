@@ -1,7 +1,7 @@
 #include "module_uart.h"
 
-#include <MDR32F9Qx_rst_clk.h>
-#include <MDR32F9Qx_uart.h>
+#include "MDR32FxQI_rst_clk.h"          // Milandr::Drivers:RST_CLK
+#include "MDR32FxQI_uart.h"             // Milandr::Drivers:UART
 
 #include <string.h>
 

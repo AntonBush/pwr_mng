@@ -4,7 +4,7 @@
 #include "module_menu.h"
 #include "module_time.h"
 
-#include <MDR32F9Qx_port.h>
+#include "MDR32FxQI_port.h"             // Milandr::Drivers:PORT
 
 #define PWR__N_DEVICES     6
 

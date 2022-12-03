@@ -20,18 +20,18 @@
   */
 
 #if defined (USE_MDR32F9Q2_Rev0)  || defined (USE_MDR32F9Q2_Rev1) || \
-    defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
+    defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1) || \
+		defined (USE_MDR32F9Q2I)
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __LCD_H
 #define __LCD_H
 
 /* Includes ------------------------------------------------------------------*/
-#include <MDR32Fx.h>
-#include <MDR32F9Qx_port.h>
-#include <MDR32F9Qx_rst_clk.h>
+#include "MDR32FxQI_config.h"           // Milandr::Device:Startup
+#include "MDR32FxQI_port.h"             // Milandr::Drivers:PORT
+#include "MDR32FxQI_rst_clk.h"          // Milandr::Drivers:RST_CLK
 #include "types.h"
-#include "MDR32F9Qx_board.h"
 
 #define LCD_DATA_BAS_8_0  (PORT_Pin_0 | PORT_Pin_1 | PORT_Pin_2 | PORT_Pin_3 | \
                          PORT_Pin_4 | PORT_Pin_5)
@@ -57,7 +57,8 @@
 /* LCD control port pins definitions */
 
 /* LCD crystals control */
-#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1)
+#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
+    defined (USE_MDR32F9Q2I)
 #define LCD_CRYSTAL_PINs                 (PORT_Pin_7 | PORT_Pin_8)
 #define LCD_CRYSTAL_POS                  7
 #define LCD_CRYSTAL_PORT                 MDR_PORTB
@@ -68,7 +69,8 @@
 #endif
 
 /* LCD command/data switching */
-#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1)
+#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
+    defined (USE_MDR32F9Q2I)
 #define LCD_CMD_DATA_PIN                 (PORT_Pin_0)
 #define LCD_CMD_DATA_PORT                MDR_PORTC
 #elif defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
@@ -77,7 +79,8 @@
 #endif
 
 /* LCD read/write switching */
-#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1)
+#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
+    defined (USE_MDR32F9Q2I)
 #define LCD_RD_WR_PIN                    (PORT_Pin_10)
 #define LCD_RD_WR_PORT                   MDR_PORTB
 #elif defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
@@ -86,7 +89,8 @@
 #endif
 
 /* LCD CLOCK signal control */
-#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1)
+#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
+    defined (USE_MDR32F9Q2I)
 #define LCD_CLOCK_PIN                    (PORT_Pin_1)
 #define LCD_CLOCK_PORT                   MDR_PORTC
 #elif defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)
@@ -95,7 +99,8 @@
 #endif
 
 /* LCD RESET signal control */
-#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1)
+#if defined (USE_MDR32F9Q2_Rev0) || defined (USE_MDR32F9Q2_Rev1) || \
+    defined (USE_MDR32F9Q2I)
 #define LCD_RESET_PIN                    (PORT_Pin_9)
 #define LCD_RESET_PORT                   MDR_PORTB
 #elif defined (USE_MDR32F9Q3_Rev0) || defined (USE_MDR32F9Q3_Rev1)

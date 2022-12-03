@@ -1,7 +1,7 @@
 #include "module_interrupt.h"
 
-#include <MDR32F9Qx_bkp.h>
-#include <MDR32F9Qx_uart.h>
+#include "MDR32FxQI_bkp.h"              // Milandr::Drivers:BKP
+#include "MDR32FxQI_uart.h"             // Milandr::Drivers:UART
 
 #include <stddef.h>
 

@@ -20,7 +20,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "systick.h"
-#include "diskio.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
   * @{

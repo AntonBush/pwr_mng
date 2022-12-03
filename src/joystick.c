@@ -18,7 +18,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <MDR32F9Qx_port.h>
+#include "MDR32FxQI_port.h"             // Milandr::Drivers:PORT
 #include "joystick.h"
 
 /** @addtogroup __MDR32F9Qx_Eval_Demo MDR32F9Qx Demonstration Example
@@ -39,7 +39,7 @@
 typedef struct
 {
   MDR_PORT_TypeDef * PORT;
-  uint16_t PORT_Pin;
+  PORT_Pin_TypeDef PORT_Pin;
 }JoystickKeys_TypeDef;
 
 /** @} */ /* End of group Joystick_Private_Types */
@@ -77,7 +77,7 @@ KeyCode GetKey(void)
 
   for (i = 0; i < (NUM_KEY_CODES - 2); i++)
   {
-    if ((PORT_ReadInputDataBit(JoystickKeys[i].PORT, JoystickKeys[i].PORT_Pin)) == Bit_RESET)
+    if ((PORT_ReadInputDataBit(JoystickKeys[i].PORT, JoystickKeys[i].PORT_Pin)) == RESET)
     {
       if (key != NOKEY)
       {
