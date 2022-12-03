@@ -35,8 +35,6 @@ static void App_updateStats(void);
 
 static void App_resetStats(uint32_t old_time);
 
-static void App_testProc(void);
-
 static void App_resolveCommands(void);
 
 static void App_eepromRead13(void);
@@ -77,7 +75,8 @@ static Menu_Menu App_Eeprom16Menu = {"EEPROM devices",
                                      NULL};
 
 static Menu_MenuItem App_EepromMenuItems[] = {{"Devices 1-3", &App_Eeprom16Menu, App_eepromRead13},
-                                              {"Devices 4-6", &App_Eeprom16Menu, App_eepromRead46}};
+                                              {"Devices 4-6", &App_Eeprom16Menu, App_eepromRead46},
+                                              {"Return", NULL, App_returnProc}};
 
 static Menu_Menu App_EepromMenu = {"EEPROM devices",
                                    App_EepromMenuItems,
@@ -92,7 +91,6 @@ static Menu_Menu App_EepromMenu = {"EEPROM devices",
 static Menu_MenuItem App_MainMenuItems[] = {{"Devices", &Pwr_DeviceMenu, NULL},
                                             {"SetTime", &Time_SetTimeMenu, NULL},
                                             {"Force Send", NULL, App_sendStatsProc},
-                                            {"Test", NULL, App_testProc},
                                             {"EEPROM", &App_EepromMenu, NULL}};
 
 static Menu_Menu App_MainMenu = {"Main menu",
@@ -330,11 +328,6 @@ void App_resetStats(uint32_t old_time)
     Pwr_resetStats(new_time);
 }
 
-void App_testProc(void)
-{
-    Pwr_toggleTestWaitTicks();
-}
-
 typedef enum {
     App_ResolveCommandState_init,
     App_ResolveCommandState_device,
@@ -415,16 +408,16 @@ static void App_eepromRead(int x)
         App_EepromWorktimeStrs[i][0] = '0' + device_index;
 
         // h
-        App_EepromWorktimeStrs[i][3] = Eeprom_readByte(data_index++);
-        App_EepromWorktimeStrs[i][4] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][3] = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][4] = Utility_uintToChar(Eeprom_readByte(data_index++));
 
         // m
-        App_EepromWorktimeStrs[i][6] = Eeprom_readByte(data_index++);
-        App_EepromWorktimeStrs[i][7] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][6] = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][7] = Utility_uintToChar(Eeprom_readByte(data_index++));
 
         // s
-        App_EepromWorktimeStrs[i][9]  = Eeprom_readByte(data_index++);
-        App_EepromWorktimeStrs[i][10] = Eeprom_readByte(data_index++);
+        App_EepromWorktimeStrs[i][9]  = Utility_uintToChar(Eeprom_readByte(data_index++));
+        App_EepromWorktimeStrs[i][10] = Utility_uintToChar(Eeprom_readByte(data_index++));
     }
 }
 
@@ -454,14 +447,16 @@ void App_eepromUpdateCurrent(void)
     Pwr_setCurrentDevice(old_device);
 
     data_index = 6 * device_index;
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][3] = time.hour / 10 % 10, data_index++);
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][4] = time.hour % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][3] = Utility_uintToChar(time.hour / 10 % 10), data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][4] = Utility_uintToChar(time.hour % 10), data_index++);
 
     // m
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][6] = time.minute / 10 % 10, data_index++);
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][7] = time.minute % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][6] = Utility_uintToChar(time.minute / 10 % 10), data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][7] = Utility_uintToChar(time.minute % 10), data_index++);
 
     // s
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][9] = time.second / 10 % 10, data_index++);
-    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][10] = time.second % 10, data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][9] = Utility_uintToChar(time.second / 10 % 10), data_index++);
+    Eeprom_writeByte(App_EepromWorktimeStrs[str_index][10] = Utility_uintToChar(time.second % 10), data_index++);
+
+    Menu_displayMenu(App_CurrentMenu);
 }

@@ -9,5 +9,6 @@ typedef void(Utility_Procedure)(void);
 typedef void(Utility_ProcedureUint32)(uint32_t);
 
 char Utility_intToChar(int digit);
+char Utility_uintToChar(unsigned int digit);
 
 #endif // MODULE_UTILITY

@@ -24,11 +24,6 @@ typedef struct
     uint32_t pin;
 } Pwr_Device;
 
-typedef enum {
-    Pwr_WaitForTicks_fast = 8000,
-    Pwr_WaitForTicks_test = 800000
-} Pwr_WaitForTicks;
-
 // Pwr private function prototypes
 
 static void Pwr_updateGuiStr(void);
@@ -138,8 +133,6 @@ Menu_Menu Pwr_DeviceMenu                   = {"Devices",
                                               NULL};
 
 static Utility_Procedure *Pwr_Update = NULL;
-
-static Pwr_WaitForTicks Pwr_WaitTicks = Pwr_WaitForTicks_fast;
 
 // Pwr public functions
 
@@ -310,15 +303,6 @@ void Pwr_resetStats(uint32_t time)
     for (i = 0; i < PWR__N_DEVICES; ++i) {
         Pwr_Device *device  = Pwr_Devices + i;
         device->last_update = time;
-    }
-}
-
-void Pwr_toggleTestWaitTicks(void)
-{
-    if (Pwr_WaitTicks == Pwr_WaitForTicks_fast) {
-        Pwr_WaitTicks = Pwr_WaitForTicks_test;
-    } else {
-        Pwr_WaitTicks = Pwr_WaitForTicks_fast;
     }
 }
 

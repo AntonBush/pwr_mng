@@ -48,6 +48,4 @@ void Pwr_checkPoint(uint32_t time);
 void Pwr_updateStats(uint32_t time);
 void Pwr_resetStats(uint32_t time);
 
-void Pwr_toggleTestWaitTicks(void);
-
 #endif // MODULE_PWR
